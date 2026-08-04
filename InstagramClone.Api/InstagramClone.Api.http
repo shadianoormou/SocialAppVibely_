@@ -1,6 +1,29 @@
-@InstagramClone.Api_HostAddress = http://localhost:5112
+@HostAddress = http://localhost:5112
 
-GET {{InstagramClone.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "shadia",
+  "email": "shadia@example.com",
+  "password": "123456",
+  "fullName": "Shadia"
+}
 
 ###
+
+POST {{HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "emailOrUserName": "shadia",
+  "password": "123456"
+}
+
+###
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidW5pcXVlX25hbWUiOiJzaGFkaWEiLCJlbWFpbCI6InNoYWRpYUBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMSIsImV4cCI6MTc4NTkxMTI1NSwiaXNzIjoiSW5zdGFncmFtQ2xvbmUuQXBpIiwiYXVkIjoiSW5zdGFncmFtQ2xvbmUuTW9iaWxlIn0.jW48uIjaLuX3pBE4IZ2casByztWoZhx_jQ6xY7P0ogw
+
+GET {{HostAddress}}/api/users/me
+Authorization: Bearer {{token}}
+Accept: application/json
