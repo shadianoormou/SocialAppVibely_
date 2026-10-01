@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<Shell
-    x:Class="InstagramClone.Mobile.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:InstagramClone.Mobile.Views"
-    FlyoutBehavior="Disabled"
-    Shell.NavBarIsVisible="False">
-
-    <ShellContent
-        Route="LoginPage"
-        ContentTemplate="{DataTemplate views:LoginPage}" />
-
+<Shell x:Class="InstagramClone.Mobile.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:InstagramClone.Mobile.Views"
+       xmlns:local="clr-namespace:InstagramClone.Mobile"
+       FlyoutBehavior="Disabled"
+       Shell.NavBarIsVisible="False">
+    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate views:LoginPage}" />
+    <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate views:RegisterPage}" />
+    <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
 </Shell>

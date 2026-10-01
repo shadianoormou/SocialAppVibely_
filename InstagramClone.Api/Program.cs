@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using InstagramClone.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,14 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException(
-        "DefaultConnection was not found in appsettings.json.");
+    ?? "Data Source=Vibely.db";
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT key was not configured.");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    if (builder.Environment.IsDevelopment())
+        options.UseSqlite(connectionString);
+    else
+        options.UseSqlServer(connectionString);
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -42,19 +47,67 @@ builder.Services.AddAuthentication(options =>
 
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var userIdValue = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdValue, out var userId))
+            {
+                context.Fail("The session does not identify a valid user.");
+                return;
+            }
+
+            var dbContext = context.HttpContext.RequestServices
+                .GetRequiredService<AppDbContext>();
+            var userExists = await dbContext.Users
+                .AsNoTracking()
+                .AnyAsync(user => user.Id == userId);
+
+            if (!userExists)
+                context.Fail("The account for this session no longer exists.");
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalPreview", policy =>
+    {
+        policy.WithOrigins(
+                "http://127.0.0.1:8765",
+                "http://localhost:8765")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (app.Environment.IsDevelopment())
+    {
+        dbContext.Database.EnsureCreated();
+        EnsureDevelopmentProfileColumns(dbContext);
+    }
+    else
+        dbContext.Database.Migrate();
+}
+
 if (app.Environment.IsDevelopment())
 {
+    app.MapGet("/", () => Results.Redirect("http://127.0.0.1:8765/"));
     app.MapOpenApi();
 }
 
+app.UseStaticFiles();
+app.UseCors("LocalPreview");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -63,3 +116,60 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static void EnsureDevelopmentProfileColumns(AppDbContext dbContext)
+{
+    var connection = dbContext.Database.GetDbConnection();
+    connection.Open();
+
+    var columns = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+    using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info('Users');";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+            columns[reader.GetString(1)] = reader.GetInt32(3) == 1;
+    }
+
+    if (columns.TryGetValue("PhoneNumber", out var phoneIsRequired) && phoneIsRequired)
+    {
+        using var dropPhoneIndex = connection.CreateCommand();
+        dropPhoneIndex.CommandText = "DROP INDEX IF EXISTS IX_Users_PhoneNumber;";
+        dropPhoneIndex.ExecuteNonQuery();
+
+        using var dropPhoneColumn = connection.CreateCommand();
+        dropPhoneColumn.CommandText = "ALTER TABLE Users DROP COLUMN PhoneNumber;";
+        dropPhoneColumn.ExecuteNonQuery();
+        columns.Remove("PhoneNumber");
+    }
+
+    foreach (var column in new[] { "ProfileLinkTitle", "ProfileLinkUrl", "PhoneNumber" })
+    {
+        if (columns.ContainsKey(column))
+            continue;
+
+        using var alter = connection.CreateCommand();
+        alter.CommandText = column == "PhoneNumber"
+            ? "ALTER TABLE Users ADD COLUMN PhoneNumber TEXT NULL;"
+            : $"ALTER TABLE Users ADD COLUMN {column} TEXT NOT NULL DEFAULT '';";
+        alter.ExecuteNonQuery();
+    }
+
+    using var otpTable = connection.CreateCommand();
+    otpTable.CommandText = """
+        CREATE TABLE IF NOT EXISTS PhoneOtpChallenges (
+            Id INTEGER NOT NULL CONSTRAINT PK_PhoneOtpChallenges PRIMARY KEY AUTOINCREMENT,
+            PhoneNumber TEXT NOT NULL,
+            CodeHash TEXT NOT NULL,
+            CreatedAtUtc TEXT NOT NULL,
+            ExpiresAtUtc TEXT NOT NULL,
+            ConsumedAtUtc TEXT NULL,
+            Attempts INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE INDEX IF NOT EXISTS IX_PhoneOtpChallenges_PhoneNumber_CreatedAtUtc
+            ON PhoneOtpChallenges (PhoneNumber, CreatedAtUtc);
+        CREATE UNIQUE INDEX IF NOT EXISTS IX_Users_PhoneNumber
+            ON Users (PhoneNumber);
+        """;
+    otpTable.ExecuteNonQuery();
+}

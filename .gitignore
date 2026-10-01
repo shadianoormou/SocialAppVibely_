@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Vibely local development artifacts
+InstagramClone.Api/*.db
+InstagramClone.Api/*.db-shm
+InstagramClone.Api/*.db-wal
+.tools/

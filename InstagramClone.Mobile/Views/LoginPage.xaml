@@ -49,7 +49,7 @@
             <Ellipse.Fill>
                 <RadialGradientBrush>
                     <GradientStop Color="#F43F8D" Offset="0.00" />
-                    <GradientStop Color="#8B5CF6" Offset="0.42" />
+                    <GradientStop Color="#9B7BFF" Offset="0.42" />
                     <GradientStop Color="#008B5CF6" Offset="1.00" />
                 </RadialGradientBrush>
             </Ellipse.Fill>
@@ -174,6 +174,13 @@
                                 </Ellipse.Shadow>
                             </Ellipse>
                         </Grid>
+
+                        <Image
+                            Source="vibely-icon.png"
+                            Aspect="AspectFill"
+                            Margin="7"
+                            Opacity="0.98"
+                            ZIndex="5" />
                     </Grid>
 
                     <HorizontalStackLayout
@@ -497,6 +504,47 @@
                             </Grid>
                         </Border>
 
+                        <Border
+                            x:Name="PhoneLoginCard"
+                            HeightRequest="59"
+                            Padding="17,0"
+                            BackgroundColor="#17151F"
+                            Stroke="#514366"
+                            StrokeThickness="1">
+
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18" />
+                            </Border.StrokeShape>
+
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="PhoneLogin_Tapped" />
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="13">
+                                <Border
+                                    Grid.Column="0"
+                                    WidthRequest="35"
+                                    HeightRequest="35"
+                                    BackgroundColor="#2D223A"
+                                    Stroke="#7C3AED"
+                                    StrokeThickness="1"
+                                    VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="11" />
+                                    </Border.StrokeShape>
+                                    <Label Text="⌕" TextColor="#F0B7D0" FontSize="20" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                </Border>
+                                <Label
+                                    Grid.Column="1"
+                                    Text="Continue with phone number"
+                                    FontSize="15"
+                                    FontAttributes="Bold"
+                                    TextColor="White"
+                                    VerticalOptions="Center"
+                                    HorizontalTextAlignment="Center" />
+                            </Grid>
+                        </Border>
+
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
 
                             <Label
@@ -515,6 +563,16 @@
                                 </Label.GestureRecognizers>
                             </Label>
                         </HorizontalStackLayout>
+
+                        <Label
+                            Text="Explore Vibely as a guest  →"
+                            TextColor="#F0ABFC"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="Guest_Tapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
                     </VerticalStackLayout>
                 </Border>
 

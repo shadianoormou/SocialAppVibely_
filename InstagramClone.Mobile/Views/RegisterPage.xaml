@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="InstagramClone.Mobile.Views.RegisterPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#0B0A10"
+             Shell.NavBarIsVisible="False">
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout Padding="24,34,24,30" Spacing="22">
+            <Button Text="‹  Back to sign in" TextColor="#C4B5FD" BackgroundColor="Transparent" FontSize="14" HorizontalOptions="Start" Padding="0" Clicked="BackButton_Clicked" />
+            <Image Source="vibely-logo.png" WidthRequest="190" HeightRequest="78" Aspect="AspectFit" HorizontalOptions="Center" />
+            <VerticalStackLayout Spacing="8" Margin="0,16,0,8">
+                <Label Text="Your world starts here." TextColor="White" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="30" />
+                <Label Text="Create a space for the things that move you." TextColor="#A8A3B3" FontSize="14" />
+            </VerticalStackLayout>
+            <Border Padding="20" BackgroundColor="#15151D" Stroke="#352A48" StrokeThickness="1">
+                <Border.StrokeShape><RoundRectangle CornerRadius="26" /></Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Create your account" TextColor="White" FontSize="18" FontAttributes="Bold" />
+                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="FullNameEntry" Placeholder="Full name" PlaceholderColor="#777181" TextColor="White" /></Border>
+                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="UserNameEntry" Placeholder="Username" PlaceholderColor="#777181" TextColor="White" /></Border>
+                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="EmailEntry" Placeholder="Email address" PlaceholderColor="#777181" TextColor="White" Keyboard="Email" /></Border>
+                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="PasswordEntry" Placeholder="Password (6+ characters)" PlaceholderColor="#777181" TextColor="White" IsPassword="True" /></Border>
+                    <Button x:Name="CreateAccountButton" Text="Create account" HeightRequest="56" CornerRadius="17" FontAttributes="Bold" FontSize="15" TextColor="White" Clicked="CreateAccountButton_Clicked"><Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#7C3AED" Offset="0" /><GradientStop Color="#EC4899" Offset="1" /></LinearGradientBrush></Button.Background></Button>
+                    <Button x:Name="PhoneRegisterButton" Text="Sign up with phone number" HeightRequest="50" CornerRadius="15" FontAttributes="Bold" FontSize="13" TextColor="#C4B5FD" BackgroundColor="#1C1B25" BorderColor="#514366" BorderWidth="1" Clicked="PhoneRegisterButton_Clicked" />
+                    <ActivityIndicator x:Name="RegisterActivityIndicator" IsVisible="False" IsRunning="False" Color="#C4B5FD" HorizontalOptions="Center" />
+                    <Label Text="By joining, you agree to Vibely's community guidelines." TextColor="#777181" FontSize="11" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

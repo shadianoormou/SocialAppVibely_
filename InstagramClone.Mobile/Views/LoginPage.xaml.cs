@@ -185,18 +185,6 @@ public partial class LoginPage : ContentPage
                     "The server returned an invalid response.");
             }
 
-            await SecureStorage.Default.SetAsync(
-                "auth_token",
-                result.Token);
-
-            await SecureStorage.Default.SetAsync(
-                "user_id",
-                result.UserId.ToString());
-
-            await SecureStorage.Default.SetAsync(
-                "user_name",
-                result.UserName);
-
             await LoginButton.ScaleToAsync(
                 0.96,
                 90,
@@ -207,10 +195,7 @@ public partial class LoginPage : ContentPage
                 130,
                 Easing.SpringOut);
 
-            await DisplayAlertAsync(
-                "Welcome to Vibely",
-                $"Signed in successfully as @{result.UserName}.",
-                "Continue");
+            await CompleteLoginAsync(result);
         }
         catch (HttpRequestException)
         {
@@ -262,10 +247,13 @@ public partial class LoginPage : ContentPage
                 130,
                 Easing.SpringOut);
 
-            await DisplayAlertAsync(
-                "Google Sign-In",
-                "Google OAuth configuration will be added next.",
-                "OK");
+            var result = await _authService.AuthenticateExternalAsync("google")
+                ?? throw new InvalidOperationException("Google did not return a session.");
+            await CompleteLoginAsync(result);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Google sign-in unavailable", ex.Message, "OK");
         }
         finally
         {
@@ -291,10 +279,13 @@ public partial class LoginPage : ContentPage
                 130,
                 Easing.SpringOut);
 
-            await DisplayAlertAsync(
-                "Facebook Sign-In",
-                "Facebook OAuth configuration will be added next.",
-                "OK");
+            var result = await _authService.AuthenticateExternalAsync("facebook")
+                ?? throw new InvalidOperationException("Facebook did not return a session.");
+            await CompleteLoginAsync(result);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Facebook sign-in unavailable", ex.Message, "OK");
         }
         finally
         {
@@ -302,14 +293,76 @@ public partial class LoginPage : ContentPage
         }
     }
 
+    private async void PhoneLogin_Tapped(
+        object? sender,
+        TappedEventArgs e)
+    {
+        PhoneLoginCard.IsEnabled = false;
+        try
+        {
+            var phoneNumber = await DisplayPromptAsync(
+                "Continue with phone",
+                "Enter your number in international format, for example +8801XXXXXXXXX.",
+                "Send code",
+                "Cancel",
+                keyboard: Keyboard.Telephone);
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return;
+
+            var challenge = await _authService.RequestPhoneCodeAsync(phoneNumber.Trim());
+            var codeMessage = challenge?.DevelopmentCode is null
+                ? "Enter the 6-digit code sent to your phone."
+                : $"Development mode code: {challenge.DevelopmentCode}";
+            var code = await DisplayPromptAsync(
+                "Verify your number",
+                codeMessage,
+                "Verify",
+                "Cancel",
+                keyboard: Keyboard.Numeric,
+                maxLength: 6);
+            if (string.IsNullOrWhiteSpace(code))
+                return;
+
+            var result = await _authService.VerifyPhoneCodeAsync(phoneNumber.Trim(), code.Trim());
+            if (result is null || string.IsNullOrWhiteSpace(result.Token))
+                throw new InvalidOperationException("The server returned an invalid response.");
+
+            await CompleteLoginAsync(result);
+        }
+        catch (HttpRequestException)
+        {
+            await DisplayAlertAsync("Connection error", "The Vibely API is not running or the API address is incorrect.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Phone sign-in failed", ex.Message, "OK");
+        }
+        finally
+        {
+            PhoneLoginCard.IsEnabled = true;
+        }
+    }
+
+    private static async Task CompleteLoginAsync(AuthResponse result)
+    {
+        await SecureStorage.Default.SetAsync("auth_token", result.Token);
+        await SecureStorage.Default.SetAsync("user_id", result.UserId.ToString());
+        await SecureStorage.Default.SetAsync("user_name", result.UserName);
+        await Shell.Current.GoToAsync("//MainPage");
+    }
+
     private async void Register_Tapped(
         object? sender,
         TappedEventArgs e)
     {
-        await DisplayAlertAsync(
-            "Create account",
-            "The premium registration page will open here.",
-            "OK");
+        await Shell.Current.GoToAsync("//RegisterPage");
+    }
+
+    private async void Guest_Tapped(
+        object? sender,
+        TappedEventArgs e)
+    {
+        await Shell.Current.GoToAsync("//MainPage");
     }
 
     private void SetLoadingState(bool isLoading)
@@ -320,6 +373,7 @@ public partial class LoginPage : ContentPage
         PasswordToggleButton.IsEnabled = !isLoading;
         GoogleLoginCard.IsEnabled = !isLoading;
         FacebookLoginCard.IsEnabled = !isLoading;
+        PhoneLoginCard.IsEnabled = !isLoading;
 
         LoginButton.Text = isLoading
             ? "Signing in..."

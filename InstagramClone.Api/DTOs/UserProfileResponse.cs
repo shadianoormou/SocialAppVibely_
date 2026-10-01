@@ -14,7 +14,17 @@ public class UserProfileResponse
 
     public string? ProfileImageUrl { get; set; }
 
+    public string ProfileLinkTitle { get; set; } = string.Empty;
+
+    public string ProfileLinkUrl { get; set; } = string.Empty;
+
     public bool IsPrivate { get; set; }
 
     public DateTime CreatedAtUtc { get; set; }
+
+    public int PostsCount { get; set; }
+
+    public int FollowersCount { get; set; }
+
+    public int FollowingCount { get; set; }
 }

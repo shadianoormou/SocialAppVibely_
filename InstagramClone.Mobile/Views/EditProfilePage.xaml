@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="InstagramClone.Mobile.Views.EditProfilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#0B0A10"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="20,22,20,12" ColumnDefinitions="Auto,*,Auto">
+            <Button Text="×" FontSize="27" TextColor="#A8A3B3" BackgroundColor="Transparent" Padding="0,0,18,0" Clicked="CancelButton_Clicked" />
+            <Label Grid.Column="1" Text="Edit profile" TextColor="White" FontSize="18" FontAttributes="Bold" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+            <Button Grid.Column="2" x:Name="SaveButton" Text="Save" FontSize="13" FontAttributes="Bold" TextColor="#D6B36A" BackgroundColor="Transparent" Padding="12,0" Clicked="SaveButton_Clicked" />
+        </Grid>
+
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Padding="22,10,22,38" Spacing="18">
+                <VerticalStackLayout Spacing="9" HorizontalOptions="Center">
+                    <Border WidthRequest="104" HeightRequest="104" Padding="3" Stroke="#D6B36A" StrokeThickness="2">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="35" /></Border.StrokeShape>
+                        <Image x:Name="ProfileImage" Aspect="AspectFill" />
+                    </Border>
+                    <Button Text="Change profile photo" TextColor="#C4B5FD" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="12" Padding="8,3" Clicked="ChangePhotoButton_Clicked" />
+                </VerticalStackLayout>
+
+                <Label Text="Profile information" TextColor="#D6B36A" FontSize="11" FontAttributes="Bold" CharacterSpacing="1.3" />
+                <Border HeightRequest="56" Padding="15,0" BackgroundColor="#17151F" Stroke="#352A48" StrokeThickness="1">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                    <Entry x:Name="UsernameEntry" Placeholder="Username" PlaceholderColor="#777181" TextColor="White" FontSize="14" />
+                </Border>
+                <Border HeightRequest="56" Padding="15,0" BackgroundColor="#17151F" Stroke="#352A48" StrokeThickness="1">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                    <Entry x:Name="FullNameEntry" Placeholder="Name" PlaceholderColor="#777181" TextColor="White" FontSize="14" />
+                </Border>
+                <Border Padding="15,10" BackgroundColor="#17151F" Stroke="#352A48" StrokeThickness="1">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                    <Editor x:Name="BioEditor" Placeholder="Bio" PlaceholderColor="#777181" TextColor="White" FontSize="14" AutoSize="TextChanges" MinimumHeightRequest="90" />
+                </Border>
+
+                <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="Links" TextColor="White" FontSize="16" FontAttributes="Bold" />
+                        <Label Text="Add a website or your favourite destination." TextColor="#8D879D" FontSize="12" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" x:Name="AddLinkButton" Text="＋ Add link" TextColor="#C4B5FD" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="12" Padding="8,0" Clicked="AddLinkButton_Clicked" />
+                </Grid>
+
+                <VerticalStackLayout x:Name="LinkEditor" IsVisible="False" Spacing="10">
+                    <Border HeightRequest="56" Padding="15,0" BackgroundColor="#17151F" Stroke="#514366" StrokeThickness="1">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                        <Entry x:Name="LinkTitleEntry" Placeholder="Link title (e.g. My portfolio)" PlaceholderColor="#777181" TextColor="White" FontSize="14" />
+                    </Border>
+                    <Border HeightRequest="56" Padding="15,0" BackgroundColor="#17151F" Stroke="#514366" StrokeThickness="1">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                        <Entry x:Name="LinkUrlEntry" Placeholder="https://your-link.com" PlaceholderColor="#777181" TextColor="White" FontSize="14" Keyboard="Url" />
+                    </Border>
+                    <Button Text="Remove link" TextColor="#F0B7D0" BackgroundColor="Transparent" HorizontalOptions="Start" FontSize="12" Padding="0,4" Clicked="RemoveLinkButton_Clicked" />
+                </VerticalStackLayout>
+
+                <Label Text="Your profile link will be visible below your bio." TextColor="#777181" FontSize="11" Margin="0,-7,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

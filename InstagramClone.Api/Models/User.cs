@@ -15,6 +15,9 @@ public class User
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
+    [MaxLength(20)]
+    public string? PhoneNumber { get; set; }
+
     [Required]
     public string PasswordHash { get; set; } = string.Empty;
 
@@ -26,6 +29,12 @@ public class User
 
     [MaxLength(500)]
     public string? ProfileImageUrl { get; set; }
+
+    [MaxLength(80)]
+    public string ProfileLinkTitle { get; set; } = string.Empty;
+
+    [MaxLength(500)]
+    public string ProfileLinkUrl { get; set; } = string.Empty;
 
     public bool IsPrivate { get; set; }
 
