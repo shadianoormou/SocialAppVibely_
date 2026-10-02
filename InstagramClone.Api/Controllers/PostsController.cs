@@ -76,7 +76,11 @@ public class PostsController : ControllerBase
         if (!TryGetUserId(out var userId))
             return Unauthorized();
 
-        if (!await _dbContext.Posts.AnyAsync(x => x.Id == id))
+        var postAuthorId = await _dbContext.Posts
+            .Where(x => x.Id == id)
+            .Select(x => (int?)x.AuthorId)
+            .SingleOrDefaultAsync();
+        if (postAuthorId is null)
             return NotFound(new { message = "Post was not found." });
 
         var like = await _dbContext.PostLikes.FindAsync(id, userId);
@@ -86,6 +90,18 @@ public class PostsController : ControllerBase
             _dbContext.PostLikes.Add(new PostLike { PostId = id, UserId = userId });
         else
             _dbContext.PostLikes.Remove(like);
+
+        if (liked && postAuthorId.Value != userId)
+        {
+            _dbContext.Notifications.Add(new Notification
+            {
+                RecipientId = postAuthorId.Value,
+                ActorId = userId,
+                Type = "like",
+                PostId = id,
+                Message = "liked your post"
+            });
+        }
 
         await _dbContext.SaveChangesAsync();
         var count = await _dbContext.PostLikes.CountAsync(x => x.PostId == id);
@@ -98,7 +114,11 @@ public class PostsController : ControllerBase
         if (!TryGetUserId(out var userId))
             return Unauthorized();
 
-        if (!await _dbContext.Posts.AnyAsync(x => x.Id == id))
+        var postAuthorId = await _dbContext.Posts
+            .Where(x => x.Id == id)
+            .Select(x => (int?)x.AuthorId)
+            .SingleOrDefaultAsync();
+        if (postAuthorId is null)
             return NotFound(new { message = "Post was not found." });
 
         var save = await _dbContext.PostSaves.FindAsync(id, userId);
@@ -144,7 +164,11 @@ public class PostsController : ControllerBase
         if (!TryGetUserId(out var userId))
             return Unauthorized();
 
-        if (!await _dbContext.Posts.AnyAsync(x => x.Id == id))
+        var postAuthorId = await _dbContext.Posts
+            .Where(x => x.Id == id)
+            .Select(x => (int?)x.AuthorId)
+            .SingleOrDefaultAsync();
+        if (postAuthorId is null)
             return NotFound(new { message = "Post was not found." });
 
         var text = request.Text.Trim();
@@ -159,6 +183,17 @@ public class PostsController : ControllerBase
         };
 
         _dbContext.PostComments.Add(comment);
+        if (postAuthorId.Value != userId)
+        {
+            _dbContext.Notifications.Add(new Notification
+            {
+                RecipientId = postAuthorId.Value,
+                ActorId = userId,
+                Type = "comment",
+                PostId = id,
+                Message = "commented on your post"
+            });
+        }
         await _dbContext.SaveChangesAsync();
 
         var response = await _dbContext.PostComments

@@ -95,6 +95,7 @@ using (var scope = app.Services.CreateScope())
     {
         dbContext.Database.EnsureCreated();
         EnsureDevelopmentProfileColumns(dbContext);
+        EnsureDevelopmentNotificationTable(dbContext);
     }
     else
         dbContext.Database.Migrate();
@@ -172,4 +173,29 @@ static void EnsureDevelopmentProfileColumns(AppDbContext dbContext)
             ON Users (PhoneNumber);
         """;
     otpTable.ExecuteNonQuery();
+}
+
+static void EnsureDevelopmentNotificationTable(AppDbContext dbContext)
+{
+    var connection = dbContext.Database.GetDbConnection();
+    connection.Open();
+
+    using var command = connection.CreateCommand();
+    command.CommandText = """
+        CREATE TABLE IF NOT EXISTS Notifications (
+            Id INTEGER NOT NULL CONSTRAINT PK_Notifications PRIMARY KEY AUTOINCREMENT,
+            RecipientId INTEGER NOT NULL,
+            ActorId INTEGER NOT NULL,
+            Type TEXT NOT NULL,
+            PostId INTEGER NULL,
+            Message TEXT NOT NULL,
+            CreatedAtUtc TEXT NOT NULL,
+            ReadAtUtc TEXT NULL,
+            CONSTRAINT FK_Notifications_Users_RecipientId FOREIGN KEY (RecipientId) REFERENCES Users (Id) ON DELETE RESTRICT,
+            CONSTRAINT FK_Notifications_Users_ActorId FOREIGN KEY (ActorId) REFERENCES Users (Id) ON DELETE RESTRICT
+        );
+        CREATE INDEX IF NOT EXISTS IX_Notifications_RecipientId_CreatedAtUtc
+            ON Notifications (RecipientId, CreatedAtUtc);
+        """;
+    command.ExecuteNonQuery();
 }

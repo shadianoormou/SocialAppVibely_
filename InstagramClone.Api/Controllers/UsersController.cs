@@ -251,7 +251,16 @@ public class UsersController : ControllerBase
         var following = follow is null;
 
         if (follow is null)
+        {
             _dbContext.Follows.Add(new Follow { FollowerId = userId, FollowingId = target.Id });
+            _dbContext.Notifications.Add(new Notification
+            {
+                RecipientId = target.Id,
+                ActorId = userId,
+                Type = "follow",
+                Message = "started following you"
+            });
+        }
         else
             _dbContext.Follows.Remove(follow);
 
