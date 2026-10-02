@@ -96,6 +96,7 @@ using (var scope = app.Services.CreateScope())
         dbContext.Database.EnsureCreated();
         EnsureDevelopmentProfileColumns(dbContext);
         EnsureDevelopmentNotificationTable(dbContext);
+        EnsureDevelopmentMessageTable(dbContext);
     }
     else
         dbContext.Database.Migrate();
@@ -196,6 +197,31 @@ static void EnsureDevelopmentNotificationTable(AppDbContext dbContext)
         );
         CREATE INDEX IF NOT EXISTS IX_Notifications_RecipientId_CreatedAtUtc
             ON Notifications (RecipientId, CreatedAtUtc);
+        """;
+    command.ExecuteNonQuery();
+}
+
+static void EnsureDevelopmentMessageTable(AppDbContext dbContext)
+{
+    var connection = dbContext.Database.GetDbConnection();
+    connection.Open();
+
+    using var command = connection.CreateCommand();
+    command.CommandText = """
+        CREATE TABLE IF NOT EXISTS DirectMessages (
+            Id INTEGER NOT NULL CONSTRAINT PK_DirectMessages PRIMARY KEY AUTOINCREMENT,
+            SenderId INTEGER NOT NULL,
+            RecipientId INTEGER NOT NULL,
+            Text TEXT NOT NULL,
+            CreatedAtUtc TEXT NOT NULL,
+            ReadAtUtc TEXT NULL,
+            CONSTRAINT FK_DirectMessages_Users_SenderId FOREIGN KEY (SenderId) REFERENCES Users (Id) ON DELETE RESTRICT,
+            CONSTRAINT FK_DirectMessages_Users_RecipientId FOREIGN KEY (RecipientId) REFERENCES Users (Id) ON DELETE RESTRICT
+        );
+        CREATE INDEX IF NOT EXISTS IX_DirectMessages_SenderId_RecipientId_CreatedAtUtc
+            ON DirectMessages (SenderId, RecipientId, CreatedAtUtc);
+        CREATE INDEX IF NOT EXISTS IX_DirectMessages_RecipientId_ReadAtUtc
+            ON DirectMessages (RecipientId, ReadAtUtc);
         """;
     command.ExecuteNonQuery();
 }

@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
                 UserName = normalizedUserName,
                 Email = normalizedEmail,
                 FullName = request.FullName.Trim(),
-                PhoneNumber = string.Empty
+                PhoneNumber = null
         };
 
         user.PasswordHash = _passwordHasher.HashPassword(
@@ -333,7 +333,7 @@ public class AuthController : ControllerBase
                     Email = profile.Email,
                     FullName = profile.FullName ?? userName,
                     ProfileImageUrl = profile.ProfileImageUrl,
-                    PhoneNumber = string.Empty
+                    PhoneNumber = null
                 };
                 user.PasswordHash = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N"));
                 _dbContext.Users.Add(user);

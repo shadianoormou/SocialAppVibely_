@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Story> Stories => Set<Story>();
     public DbSet<PhoneOtpChallenge> PhoneOtpChallenges => Set<PhoneOtpChallenge>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -103,6 +104,21 @@ public class AppDbContext : DbContext
                 .HasForeignKey(x => x.ActorId)
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(x => new { x.RecipientId, x.CreatedAtUtc });
+        });
+
+        modelBuilder.Entity<DirectMessage>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.HasOne(x => x.Sender)
+                .WithMany()
+                .HasForeignKey(x => x.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(x => x.Recipient)
+                .WithMany()
+                .HasForeignKey(x => x.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(x => new { x.SenderId, x.RecipientId, x.CreatedAtUtc });
+            entity.HasIndex(x => new { x.RecipientId, x.ReadAtUtc });
         });
     }
 }
