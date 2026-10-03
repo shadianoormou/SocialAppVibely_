@@ -108,19 +108,25 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+    if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase) ||
+        databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
         dbContext.Database.EnsureCreated();
     else if (app.Environment.IsDevelopment())
     {
         dbContext.Database.EnsureCreated();
+    }
+    else
+        dbContext.Database.Migrate();
+
+    if (app.Environment.IsDevelopment() &&
+        databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
+    {
         EnsureDevelopmentProfileColumns(dbContext);
         EnsureDevelopmentNotificationTable(dbContext);
         EnsureDevelopmentMessageTable(dbContext);
         EnsureDevelopmentFollowRequestTable(dbContext);
         EnsureDevelopmentStoryColumns(dbContext);
     }
-    else
-        dbContext.Database.Migrate();
 }
 
 if (app.Environment.IsDevelopment())
