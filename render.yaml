@@ -12,9 +12,9 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: DatabaseProvider
-        value: Sqlite
+        value: Postgres
       - key: ConnectionStrings__DefaultConnection
-        value: Data Source=/tmp/vibely-production.db
+        sync: false
       - key: MediaStorage__Provider
         value: Database
       - key: Jwt__Key
