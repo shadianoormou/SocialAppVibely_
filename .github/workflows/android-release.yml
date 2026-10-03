@@ -20,7 +20,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 10.0.400
 
       - name: Install MAUI Android workload
         run: dotnet workload install maui-android --skip-manifest-update
@@ -39,10 +39,13 @@ jobs:
 
       - name: Restore and publish APK
         run: |
-          dotnet restore InstagramClone.Mobile/InstagramClone.Mobile.csproj -p:TargetFramework=net10.0-android
+          dotnet restore InstagramClone.Mobile/InstagramClone.Mobile.csproj \
+            -p:TargetFramework=net10.0-android \
+            -p:RuntimeIdentifier=android-arm64
           dotnet publish InstagramClone.Mobile/InstagramClone.Mobile.csproj \
             -f net10.0-android \
             -c Release \
+            -r android-arm64 \
             -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="$GITHUB_WORKSPACE/vibely-release.keystore" \
@@ -52,17 +55,17 @@ jobs:
             -o "$GITHUB_WORKSPACE/out"
 
       - name: Rename APK
-        run: mv out/com.vibely.social-Signed.apk out/Vibely-1.0.3-android.apk
+        run: mv out/com.vibely.social-Signed.apk out/Vibely-1.0.4-android.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Vibely-1.0.3-android
-          path: out/Vibely-1.0.3-android.apk
+          name: Vibely-1.0.4-android
+          path: out/Vibely-1.0.4-android.apk
 
       - name: Attach APK to GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: out/Vibely-1.0.3-android.apk
+          files: out/Vibely-1.0.4-android.apk
           generate_release_notes: true
