@@ -7,4 +7,5 @@ public class CommentResponse
     public string? ProfileImageUrl { get; set; }
     public string Text { get; set; } = string.Empty;
     public DateTime CreatedAtUtc { get; set; }
+    public bool CanDelete { get; set; }
 }

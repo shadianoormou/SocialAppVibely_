@@ -186,6 +186,9 @@ public class PostsController : ControllerBase
     [HttpGet("{id:int}/comments")]
     public async Task<ActionResult<IReadOnlyList<CommentResponse>>> GetComments(int id)
     {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
         if (!await _dbContext.Posts.AnyAsync(x => x.Id == id))
             return NotFound(new { message = "Post was not found." });
 
@@ -199,7 +202,8 @@ public class PostsController : ControllerBase
                 UserName = x.Author.UserName,
                 ProfileImageUrl = x.Author.ProfileImageUrl,
                 Text = x.Text,
-                CreatedAtUtc = x.CreatedAtUtc
+                CreatedAtUtc = x.CreatedAtUtc,
+                CanDelete = x.AuthorId == userId || x.Post.AuthorId == userId
             })
             .ToListAsync();
 
@@ -254,7 +258,8 @@ public class PostsController : ControllerBase
                 UserName = x.Author.UserName,
                 ProfileImageUrl = x.Author.ProfileImageUrl,
                 Text = x.Text,
-                CreatedAtUtc = x.CreatedAtUtc
+                CreatedAtUtc = x.CreatedAtUtc,
+                CanDelete = true
             })
             .SingleAsync();
 
