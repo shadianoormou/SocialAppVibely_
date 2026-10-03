@@ -14,10 +14,12 @@ namespace InstagramClone.Api.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
+    private readonly IWebHostEnvironment _environment;
 
-    public PostsController(AppDbContext dbContext)
+    public PostsController(AppDbContext dbContext, IWebHostEnvironment environment)
     {
         _dbContext = dbContext;
+        _environment = environment;
     }
 
     [HttpPost]
@@ -58,16 +60,26 @@ public class PostsController : ControllerBase
             await BuildResponse(post.Id, userId));
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<FeedPostResponse>> GetById(int id)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized();
-
-        if (!await _dbContext.Posts.AnyAsync(x => x.Id == id))
+        var viewerId = GetOptionalUserId();
+        var post = await _dbContext.Posts
+            .AsNoTracking()
+            .Where(item => item.Id == id)
+            .Select(item => new { item.AuthorId, item.Author.IsPrivate })
+            .FirstOrDefaultAsync();
+        if (post is null)
             return NotFound(new { message = "Post was not found." });
 
-        return Ok(await BuildResponse(id, userId));
+        var canView = !post.IsPrivate ||
+            (viewerId.HasValue && (viewerId.Value == post.AuthorId ||
+                await _dbContext.Follows.AnyAsync(follow => follow.FollowerId == viewerId.Value && follow.FollowingId == post.AuthorId)));
+        if (!canView)
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "This post belongs to a private account." });
+
+        return Ok(await BuildResponse(id, viewerId));
     }
 
     [HttpPost("{id:int}/like")]
@@ -131,6 +143,44 @@ public class PostsController : ControllerBase
 
         await _dbContext.SaveChangesAsync();
         return Ok(new { saved });
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<FeedPostResponse>> Update(int id, UpdatePostRequest request)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var post = await _dbContext.Posts.FirstOrDefaultAsync(item => item.Id == id);
+        if (post is null)
+            return NotFound(new { message = "Post was not found." });
+        if (post.AuthorId != userId)
+            return Forbid();
+
+        post.Caption = request.Caption.Trim();
+        post.Location = string.IsNullOrWhiteSpace(request.Location) ? null : request.Location.Trim();
+        await _dbContext.SaveChangesAsync();
+        return Ok(await BuildResponse(id, userId));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var post = await _dbContext.Posts.FirstOrDefaultAsync(item => item.Id == id);
+        if (post is null)
+            return NotFound(new { message = "Post was not found." });
+        if (post.AuthorId != userId)
+            return Forbid();
+
+        var notifications = await _dbContext.Notifications.Where(item => item.PostId == id).ToListAsync();
+        _dbContext.Notifications.RemoveRange(notifications);
+        _dbContext.Posts.Remove(post);
+        await _dbContext.SaveChangesAsync();
+        TryDeleteLocalMedia(post.MediaUrl);
+        return NoContent();
     }
 
     [HttpGet("{id:int}/comments")]
@@ -211,7 +261,26 @@ public class PostsController : ControllerBase
         return Ok(response);
     }
 
-    private async Task<FeedPostResponse> BuildResponse(int id, int userId) =>
+    [HttpDelete("{postId:int}/comments/{commentId:int}")]
+    public async Task<IActionResult> DeleteComment(int postId, int commentId)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var comment = await _dbContext.PostComments
+            .Include(item => item.Post)
+            .FirstOrDefaultAsync(item => item.Id == commentId && item.PostId == postId);
+        if (comment is null)
+            return NotFound(new { message = "Comment was not found." });
+        if (comment.AuthorId != userId && comment.Post.AuthorId != userId)
+            return Forbid();
+
+        _dbContext.PostComments.Remove(comment);
+        await _dbContext.SaveChangesAsync();
+        return NoContent();
+    }
+
+    private async Task<FeedPostResponse> BuildResponse(int id, int? userId) =>
         await _dbContext.Posts
             .AsNoTracking()
             .Where(x => x.Id == id)
@@ -227,8 +296,9 @@ public class PostsController : ControllerBase
                 Location = x.Location,
                 LikesCount = x.Likes.Count,
                 CommentsCount = x.Comments.Count,
-                LikedByMe = x.Likes.Any(like => like.UserId == userId),
-                SavedByMe = x.Saves.Any(save => save.UserId == userId),
+                LikedByMe = userId.HasValue && x.Likes.Any(like => like.UserId == userId.Value),
+                SavedByMe = userId.HasValue && x.Saves.Any(save => save.UserId == userId.Value),
+                IsMine = userId.HasValue && x.AuthorId == userId.Value,
                 CreatedAtUtc = x.CreatedAtUtc
             })
             .SingleAsync();
@@ -237,4 +307,23 @@ public class PostsController : ControllerBase
         int.TryParse(
             User.FindFirstValue(ClaimTypes.NameIdentifier),
             out userId);
+
+    private int? GetOptionalUserId() =>
+        int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null;
+
+    private void TryDeleteLocalMedia(string mediaUrl)
+    {
+        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri) ||
+            !uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var fileName = Path.GetFileName(uri.LocalPath);
+        if (string.IsNullOrWhiteSpace(fileName))
+            return;
+
+        var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var path = Path.Combine(webRoot, "uploads", fileName);
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+    }
 }

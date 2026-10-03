@@ -27,4 +27,8 @@ public class UserProfileResponse
     public int FollowersCount { get; set; }
 
     public int FollowingCount { get; set; }
+
+    public string FollowStatus { get; set; } = "none";
+
+    public bool CanViewPosts { get; set; }
 }

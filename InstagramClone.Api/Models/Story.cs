@@ -11,6 +11,9 @@ public class Story
     [Required, MaxLength(1000)]
     public string MediaUrl { get; set; } = string.Empty;
 
+    [Required, MaxLength(20)]
+    public string MediaType { get; set; } = "image";
+
     [MaxLength(180)]
     public string? Text { get; set; }
 

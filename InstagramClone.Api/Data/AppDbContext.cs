@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<PhoneOtpChallenge> PhoneOtpChallenges => Set<PhoneOtpChallenge>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
+    public DbSet<FollowRequest> FollowRequests => Set<FollowRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -76,6 +77,14 @@ public class AppDbContext : DbContext
             entity.HasKey(x => new { x.FollowerId, x.FollowingId });
             entity.HasOne(x => x.Follower).WithMany().HasForeignKey(x => x.FollowerId).OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(x => x.Following).WithMany().HasForeignKey(x => x.FollowingId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<FollowRequest>(entity =>
+        {
+            entity.HasKey(x => new { x.FollowerId, x.FollowingId });
+            entity.HasOne(x => x.Follower).WithMany().HasForeignKey(x => x.FollowerId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(x => x.Following).WithMany().HasForeignKey(x => x.FollowingId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(x => new { x.FollowingId, x.CreatedAtUtc });
         });
 
         modelBuilder.Entity<Story>(entity =>

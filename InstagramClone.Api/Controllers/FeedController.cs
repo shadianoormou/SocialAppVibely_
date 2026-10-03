@@ -33,8 +33,21 @@ public class FeedController : ControllerBase
 
         take = Math.Clamp(take, 1, 50);
 
-        var posts = await _dbContext.Posts
-            .AsNoTracking()
+        var query = _dbContext.Posts.AsNoTracking();
+        if (userId.HasValue)
+        {
+            var viewerId = userId.Value;
+            query = query.Where(post =>
+                !post.Author.IsPrivate ||
+                post.AuthorId == viewerId ||
+                _dbContext.Follows.Any(follow => follow.FollowerId == viewerId && follow.FollowingId == post.AuthorId));
+        }
+        else
+        {
+            query = query.Where(post => !post.Author.IsPrivate);
+        }
+
+        var posts = await query
             .OrderByDescending(x => x.CreatedAtUtc)
             .Take(take)
             .Select(x => new FeedPostResponse
@@ -51,6 +64,7 @@ public class FeedController : ControllerBase
                 CommentsCount = x.Comments.Count,
                 LikedByMe = userId.HasValue && x.Likes.Any(like => like.UserId == userId.Value),
                 SavedByMe = userId.HasValue && x.Saves.Any(save => save.UserId == userId.Value),
+                IsMine = userId.HasValue && x.AuthorId == userId.Value,
                 CreatedAtUtc = x.CreatedAtUtc
             })
             .ToListAsync();

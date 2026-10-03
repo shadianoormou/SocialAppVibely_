@@ -14,19 +14,27 @@ namespace InstagramClone.Api.Controllers;
 public class StoriesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
+    private readonly IWebHostEnvironment _environment;
 
-    public StoriesController(AppDbContext dbContext)
+    public StoriesController(AppDbContext dbContext, IWebHostEnvironment environment)
     {
         _dbContext = dbContext;
+        _environment = environment;
     }
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<StoryResponse>>> GetActive()
     {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
         var now = DateTime.UtcNow;
         var stories = await _dbContext.Stories
             .AsNoTracking()
-            .Where(x => x.ExpiresAtUtc > now)
+            .Where(x => x.ExpiresAtUtc > now &&
+                (!x.Author.IsPrivate ||
+                 x.AuthorId == userId ||
+                 _dbContext.Follows.Any(follow => follow.FollowerId == userId && follow.FollowingId == x.AuthorId)))
             .OrderByDescending(x => x.CreatedAtUtc)
             .Select(x => new StoryResponse
             {
@@ -34,7 +42,9 @@ public class StoriesController : ControllerBase
                 UserName = x.Author.UserName,
                 ProfileImageUrl = x.Author.ProfileImageUrl,
                 MediaUrl = x.MediaUrl,
+                MediaType = x.MediaType,
                 Text = x.Text,
+                IsMine = x.AuthorId == userId,
                 CreatedAtUtc = x.CreatedAtUtc,
                 ExpiresAtUtc = x.ExpiresAtUtc
             })
@@ -59,8 +69,12 @@ public class StoriesController : ControllerBase
         {
             AuthorId = userId,
             MediaUrl = mediaUrl,
+            MediaType = string.IsNullOrWhiteSpace(request.MediaType) ? "image" : request.MediaType.Trim().ToLowerInvariant(),
             Text = string.IsNullOrWhiteSpace(request.Text) ? null : request.Text.Trim()
         };
+
+        if (story.MediaType is not ("image" or "video"))
+            return BadRequest(new { message = "Media type must be image or video." });
 
         _dbContext.Stories.Add(story);
         await _dbContext.SaveChangesAsync();
@@ -73,7 +87,9 @@ public class StoriesController : ControllerBase
                 UserName = x.Author.UserName,
                 ProfileImageUrl = x.Author.ProfileImageUrl,
                 MediaUrl = x.MediaUrl,
+                MediaType = x.MediaType,
                 Text = x.Text,
+                IsMine = true,
                 CreatedAtUtc = x.CreatedAtUtc,
                 ExpiresAtUtc = x.ExpiresAtUtc
             })
@@ -82,6 +98,38 @@ public class StoriesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var story = await _dbContext.Stories.FirstOrDefaultAsync(item => item.Id == id);
+        if (story is null)
+            return NotFound(new { message = "Story was not found." });
+        if (story.AuthorId != userId)
+            return Forbid();
+
+        _dbContext.Stories.Remove(story);
+        await _dbContext.SaveChangesAsync();
+        TryDeleteLocalMedia(story.MediaUrl);
+        return NoContent();
+    }
+
     private bool TryGetUserId(out int userId) =>
         int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
+
+    private void TryDeleteLocalMedia(string mediaUrl)
+    {
+        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri) ||
+            !uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            return;
+        var fileName = Path.GetFileName(uri.LocalPath);
+        if (string.IsNullOrWhiteSpace(fileName))
+            return;
+        var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var path = Path.Combine(webRoot, "uploads", fileName);
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+    }
 }

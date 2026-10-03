@@ -51,7 +51,9 @@ public class UsersController : ControllerBase
                 CreatedAtUtc = x.CreatedAtUtc,
                 PostsCount = _dbContext.Posts.Count(post => post.AuthorId == x.Id),
                 FollowersCount = _dbContext.Follows.Count(follow => follow.FollowingId == x.Id),
-                FollowingCount = _dbContext.Follows.Count(follow => follow.FollowerId == x.Id)
+                FollowingCount = _dbContext.Follows.Count(follow => follow.FollowerId == x.Id),
+                FollowStatus = "self",
+                CanViewPosts = true
             })
             .FirstOrDefaultAsync();
 
@@ -69,6 +71,9 @@ public class UsersController : ControllerBase
     [HttpGet("search")]
     public async Task<ActionResult> Search([FromQuery] string q)
     {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
         if (string.IsNullOrWhiteSpace(q))
             return Ok(Array.Empty<object>());
 
@@ -84,7 +89,13 @@ public class UsersController : ControllerBase
                 x.UserName,
                 x.FullName,
                 x.ProfileImageUrl,
-                FollowersCount = _dbContext.Follows.Count(follow => follow.FollowingId == x.Id)
+                x.IsPrivate,
+                FollowersCount = _dbContext.Follows.Count(follow => follow.FollowingId == x.Id),
+                FollowStatus = _dbContext.Follows.Any(follow => follow.FollowerId == userId && follow.FollowingId == x.Id)
+                    ? "following"
+                    : _dbContext.FollowRequests.Any(request => request.FollowerId == userId && request.FollowingId == x.Id)
+                        ? "requested"
+                        : "none"
             })
             .ToListAsync();
 
@@ -164,6 +175,7 @@ public class UsersController : ControllerBase
                 CommentsCount = post.Comments.Count,
                 LikedByMe = post.Likes.Any(like => like.UserId == userId),
                 SavedByMe = post.Saves.Any(save => save.UserId == userId),
+                IsMine = post.AuthorId == userId,
                 CreatedAtUtc = post.CreatedAtUtc
             })
             .ToListAsync();
@@ -176,6 +188,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserProfileResponse>> GetPublicProfile(string userName)
     {
         var normalizedUserName = userName.Trim().ToLowerInvariant();
+        var viewerId = GetOptionalUserId();
         var user = await _dbContext.Users
             .AsNoTracking()
             .Where(x => x.UserName == normalizedUserName)
@@ -193,7 +206,16 @@ public class UsersController : ControllerBase
                 CreatedAtUtc = x.CreatedAtUtc,
                 PostsCount = _dbContext.Posts.Count(post => post.AuthorId == x.Id),
                 FollowersCount = _dbContext.Follows.Count(follow => follow.FollowingId == x.Id),
-                FollowingCount = _dbContext.Follows.Count(follow => follow.FollowerId == x.Id)
+                FollowingCount = _dbContext.Follows.Count(follow => follow.FollowerId == x.Id),
+                FollowStatus = viewerId.HasValue && viewerId.Value == x.Id
+                    ? "self"
+                    : viewerId.HasValue && _dbContext.Follows.Any(follow => follow.FollowerId == viewerId.Value && follow.FollowingId == x.Id)
+                        ? "following"
+                        : viewerId.HasValue && _dbContext.FollowRequests.Any(request => request.FollowerId == viewerId.Value && request.FollowingId == x.Id)
+                            ? "requested"
+                            : "none",
+                CanViewPosts = !x.IsPrivate ||
+                    (viewerId.HasValue && (viewerId.Value == x.Id || _dbContext.Follows.Any(follow => follow.FollowerId == viewerId.Value && follow.FollowingId == x.Id)))
             })
             .FirstOrDefaultAsync();
 
@@ -207,6 +229,21 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<FeedPostResponse>>> GetPublicPosts(string userName)
     {
         var normalizedUserName = userName.Trim().ToLowerInvariant();
+        var target = await _dbContext.Users
+            .AsNoTracking()
+            .Where(user => user.UserName == normalizedUserName)
+            .Select(user => new { user.Id, user.IsPrivate })
+            .FirstOrDefaultAsync();
+        if (target is null)
+            return NotFound(new { message = "User was not found." });
+
+        var viewerId = GetOptionalUserId();
+        var canView = !target.IsPrivate ||
+            (viewerId.HasValue && (viewerId.Value == target.Id ||
+                await _dbContext.Follows.AnyAsync(follow => follow.FollowerId == viewerId.Value && follow.FollowingId == target.Id)));
+        if (!canView)
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "This account is private." });
+
         var posts = await _dbContext.Posts
             .AsNoTracking()
             .Where(post => post.Author.UserName == normalizedUserName)
@@ -225,6 +262,7 @@ public class UsersController : ControllerBase
                 CommentsCount = post.Comments.Count,
                 LikedByMe = false,
                 SavedByMe = false,
+                IsMine = viewerId.HasValue && post.AuthorId == viewerId.Value,
                 CreatedAtUtc = post.CreatedAtUtc
             })
             .ToListAsync();
@@ -248,27 +286,95 @@ public class UsersController : ControllerBase
             return BadRequest(new { message = "You cannot follow yourself." });
 
         var follow = await _dbContext.Follows.FindAsync(userId, target.Id);
-        var following = follow is null;
-
-        if (follow is null)
+        if (follow is not null)
         {
-            _dbContext.Follows.Add(new Follow { FollowerId = userId, FollowingId = target.Id });
+            _dbContext.Follows.Remove(follow);
+            await _dbContext.SaveChangesAsync();
+            var remainingFollowers = await _dbContext.Follows.CountAsync(x => x.FollowingId == target.Id);
+            return Ok(new { status = "none", following = false, requested = false, followersCount = remainingFollowers });
+        }
+
+        var existingRequest = await _dbContext.FollowRequests.FindAsync(userId, target.Id);
+        if (existingRequest is not null)
+        {
+            _dbContext.FollowRequests.Remove(existingRequest);
+            await _dbContext.SaveChangesAsync();
+            var unchangedFollowers = await _dbContext.Follows.CountAsync(x => x.FollowingId == target.Id);
+            return Ok(new { status = "none", following = false, requested = false, followersCount = unchangedFollowers });
+        }
+
+        if (target.IsPrivate)
+        {
+            _dbContext.FollowRequests.Add(new FollowRequest { FollowerId = userId, FollowingId = target.Id });
             _dbContext.Notifications.Add(new Notification
             {
                 RecipientId = target.Id,
                 ActorId = userId,
-                Type = "follow",
-                Message = "started following you"
+                Type = "follow_request",
+                Message = "requested to follow you"
             });
+            await _dbContext.SaveChangesAsync();
+            var currentFollowers = await _dbContext.Follows.CountAsync(x => x.FollowingId == target.Id);
+            return Ok(new { status = "requested", following = false, requested = true, followersCount = currentFollowers });
         }
-        else
-            _dbContext.Follows.Remove(follow);
+
+        _dbContext.Follows.Add(new Follow { FollowerId = userId, FollowingId = target.Id });
+        _dbContext.Notifications.Add(new Notification
+        {
+            RecipientId = target.Id,
+            ActorId = userId,
+            Type = "follow",
+            Message = "started following you"
+        });
 
         await _dbContext.SaveChangesAsync();
         var followersCount = await _dbContext.Follows.CountAsync(x => x.FollowingId == target.Id);
-        return Ok(new { following, followersCount });
+        return Ok(new { status = "following", following = true, requested = false, followersCount });
+    }
+
+    [HttpPost("{userName}/follow-request/{decision}")]
+    public async Task<ActionResult<object>> RespondToFollowRequest(string userName, string decision)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var requester = await _dbContext.Users.FirstOrDefaultAsync(user => user.UserName == userName.Trim().ToLowerInvariant());
+        if (requester is null)
+            return NotFound(new { message = "User was not found." });
+
+        var request = await _dbContext.FollowRequests.FindAsync(requester.Id, userId);
+        if (request is null)
+            return NotFound(new { message = "Follow request was not found." });
+
+        var normalizedDecision = decision.Trim().ToLowerInvariant();
+        if (normalizedDecision is not ("accept" or "decline"))
+            return BadRequest(new { message = "Decision must be accept or decline." });
+
+        _dbContext.FollowRequests.Remove(request);
+        if (normalizedDecision == "accept")
+        {
+            _dbContext.Follows.Add(new Follow { FollowerId = requester.Id, FollowingId = userId });
+            _dbContext.Notifications.Add(new Notification
+            {
+                RecipientId = requester.Id,
+                ActorId = userId,
+                Type = "follow_accepted",
+                Message = "accepted your follow request"
+            });
+        }
+
+        var requestNotifications = await _dbContext.Notifications
+            .Where(notification => notification.RecipientId == userId && notification.ActorId == requester.Id && notification.Type == "follow_request")
+            .ToListAsync();
+        _dbContext.Notifications.RemoveRange(requestNotifications);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { accepted = normalizedDecision == "accept" });
     }
 
     private bool TryGetUserId(out int userId) =>
         int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
+
+    private int? GetOptionalUserId() =>
+        int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null;
 }

@@ -14,5 +14,6 @@ public class FeedPostResponse
     public int CommentsCount { get; set; }
     public bool LikedByMe { get; set; }
     public bool SavedByMe { get; set; }
+    public bool IsMine { get; set; }
     public DateTime CreatedAtUtc { get; set; }
 }

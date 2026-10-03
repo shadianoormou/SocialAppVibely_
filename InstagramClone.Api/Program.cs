@@ -97,6 +97,8 @@ using (var scope = app.Services.CreateScope())
         EnsureDevelopmentProfileColumns(dbContext);
         EnsureDevelopmentNotificationTable(dbContext);
         EnsureDevelopmentMessageTable(dbContext);
+        EnsureDevelopmentFollowRequestTable(dbContext);
+        EnsureDevelopmentStoryColumns(dbContext);
     }
     else
         dbContext.Database.Migrate();
@@ -224,4 +226,47 @@ static void EnsureDevelopmentMessageTable(AppDbContext dbContext)
             ON DirectMessages (RecipientId, ReadAtUtc);
         """;
     command.ExecuteNonQuery();
+}
+
+static void EnsureDevelopmentFollowRequestTable(AppDbContext dbContext)
+{
+    var connection = dbContext.Database.GetDbConnection();
+    connection.Open();
+
+    using var command = connection.CreateCommand();
+    command.CommandText = """
+        CREATE TABLE IF NOT EXISTS FollowRequests (
+            FollowerId INTEGER NOT NULL,
+            FollowingId INTEGER NOT NULL,
+            CreatedAtUtc TEXT NOT NULL,
+            CONSTRAINT PK_FollowRequests PRIMARY KEY (FollowerId, FollowingId),
+            CONSTRAINT FK_FollowRequests_Users_FollowerId FOREIGN KEY (FollowerId) REFERENCES Users (Id) ON DELETE RESTRICT,
+            CONSTRAINT FK_FollowRequests_Users_FollowingId FOREIGN KEY (FollowingId) REFERENCES Users (Id) ON DELETE RESTRICT
+        );
+        CREATE INDEX IF NOT EXISTS IX_FollowRequests_FollowingId_CreatedAtUtc
+            ON FollowRequests (FollowingId, CreatedAtUtc);
+        """;
+    command.ExecuteNonQuery();
+}
+
+static void EnsureDevelopmentStoryColumns(AppDbContext dbContext)
+{
+    var connection = dbContext.Database.GetDbConnection();
+    connection.Open();
+
+    var hasMediaType = false;
+    using (var inspect = connection.CreateCommand())
+    {
+        inspect.CommandText = "PRAGMA table_info('Stories');";
+        using var reader = inspect.ExecuteReader();
+        while (reader.Read())
+            hasMediaType |= string.Equals(reader.GetString(1), "MediaType", StringComparison.OrdinalIgnoreCase);
+    }
+
+    if (hasMediaType)
+        return;
+
+    using var alter = connection.CreateCommand();
+    alter.CommandText = "ALTER TABLE Stories ADD COLUMN MediaType TEXT NOT NULL DEFAULT 'image';";
+    alter.ExecuteNonQuery();
 }
