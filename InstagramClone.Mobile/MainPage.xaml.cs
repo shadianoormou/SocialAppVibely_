@@ -1,6 +1,7 @@
 ﻿using InstagramClone.Mobile.Models;
 using InstagramClone.Mobile.Services;
 using InstagramClone.Mobile.Views;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace InstagramClone.Mobile;
 
@@ -929,6 +930,40 @@ public partial class MainPage : ContentPage
         SearchPanel.IsVisible = false;
     }
 
+    private async void MoreButton_Clicked(object? sender, EventArgs e) =>
+        await DisplayActionSheetAsync("Post options", "Cancel", null, "Not interested", "Report", "Copy link");
+
+    private void LikeButton1_Clicked(object? sender, EventArgs e)
+    {
+        LikeButton1.Text = LikeButton1.Text == "♥" ? "♡" : "♥";
+        LikeButton1.TextColor = LikeButton1.Text == "♥" ? Color.FromArgb("#F0B7D0") : Colors.White;
+    }
+
+    private void LikeButton2_Clicked(object? sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        button.Text = button.Text == "♥" ? "♡" : "♥";
+        button.TextColor = button.Text == "♥" ? Color.FromArgb("#F0B7D0") : Colors.White;
+    }
+
+    private async void CommentButton_Clicked(object? sender, EventArgs e) =>
+        await DisplayPromptAsync("Add comment", "Say something kind", "Post", "Cancel");
+
+    private async void ShareButton_Clicked(object? sender, EventArgs e) =>
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = "Vibely",
+            Text = "Discover this moment on Vibely."
+        });
+
+    private void SaveButton1_Clicked(object? sender, EventArgs e)
+    {
+        SaveButton1.Text = SaveButton1.Text == "♣" ? "♧" : "♣";
+        SaveButton1.TextColor = SaveButton1.Text == "♣" ? Color.FromArgb("#C4B5FD") : Colors.White;
+    }
+
     private async void MessagesButton_Clicked(object? sender, EventArgs e) =>
         await DisplayAlertAsync("Messages", "Messaging is ready for the conversation API.", "Done");
 
@@ -1002,7 +1037,9 @@ public partial class MainPage : ContentPage
         var confirm = await DisplayAlertAsync("Sign out?", "You can always come back to your visual world.", "Sign out", "Stay");
         if (confirm)
         {
-            await SecureStorage.Default.RemoveAsync("auth_token");
+            SecureStorage.Default.Remove("auth_token");
+            SecureStorage.Default.Remove("user_id");
+            SecureStorage.Default.Remove("user_name");
             await Shell.Current.GoToAsync("//LoginPage");
         }
     }

@@ -49,7 +49,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\Images\vibely-icon.png" />
+		<MauiIcon Include="Resources\AppIcon\appicon.png" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -62,11 +62,6 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiImage Include="..\..\..\..\Documents\Vibly images\facebook_logo.png" Link="Resources\Images\facebook_logo.png" />
-	  <MauiImage Include="..\..\..\..\Documents\Vibly images\google_g.png" Link="Resources\Images\google_g.png" />
 	</ItemGroup>
 
 	<ItemGroup>

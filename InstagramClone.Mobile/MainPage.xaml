@@ -5,11 +5,11 @@
              BackgroundColor="#0B0A10"
              Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="*,Auto">
-        <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
+        <ScrollView x:Name="MainScroll" Grid.Row="0" VerticalScrollBarVisibility="Never">
             <VerticalStackLayout Spacing="0">
                 <Grid Padding="20,24,18,14" ColumnDefinitions="*,Auto,Auto">
                     <VerticalStackLayout Spacing="1">
-                        <Image Source="vibely-logo.png" WidthRequest="128" HeightRequest="42" Aspect="AspectFit" HorizontalOptions="Start" />
+                        <Image Source="vibely_logo.png" WidthRequest="128" HeightRequest="42" Aspect="AspectFit" HorizontalOptions="Start" />
                         <Label x:Name="ContextLabel" Text="Your visual world" FontSize="11" TextColor="#A8A3B3" />
                     </VerticalStackLayout>
                     <Button Grid.Column="1" Text="⌕" FontSize="27" TextColor="White" BackgroundColor="#1C1B25" Padding="0" Margin="0,0,8,0" Clicked="SearchButton_Clicked" />

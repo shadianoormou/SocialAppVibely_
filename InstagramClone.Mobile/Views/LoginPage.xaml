@@ -176,7 +176,7 @@
                         </Grid>
 
                         <Image
-                            Source="vibely-icon.png"
+                            Source="vibely_icon.png"
                             Aspect="AspectFill"
                             Margin="7"
                             Opacity="0.98"
@@ -424,7 +424,7 @@
                                     </Border.StrokeShape>
 
                                     <Image
-                                        Source="google_g.png"
+                                        Source="vibely_icon.png"
                                         WidthRequest="22"
                                         HeightRequest="22"
                                         Aspect="AspectFit"
@@ -485,7 +485,7 @@
                                     </Border.StrokeShape>
 
                                     <Image
-                                        Source="facebook_logo.png"
+                                        Source="vibely_icon.png"
                                         WidthRequest="23"
                                         HeightRequest="23"
                                         Aspect="AspectFit"

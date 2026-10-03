@@ -134,10 +134,12 @@ public class AuthService
 
     private static string GetBaseAddress()
     {
-#if ANDROID
+#if DEBUG && ANDROID
         return "http://10.0.2.2:5112/";
-#else
+#elif DEBUG
         return "http://127.0.0.1:5112/";
+#else
+        return "https://vibely-social.onrender.com/";
 #endif
     }
 }

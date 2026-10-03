@@ -1,3 +1,4 @@
+using InstagramClone.Mobile.Models;
 using InstagramClone.Mobile.Services;
 
 namespace InstagramClone.Mobile.Views;

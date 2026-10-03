@@ -24,7 +24,7 @@ public partial class EditProfilePage : ContentPage
         LinkEditor.IsVisible = !string.IsNullOrWhiteSpace(profile.ProfileLinkTitle) ||
                                !string.IsNullOrWhiteSpace(profile.ProfileLinkUrl);
         ProfileImage.Source = string.IsNullOrWhiteSpace(profile.ProfileImageUrl)
-            ? ImageSource.FromFile("vibely-icon.png")
+            ? ImageSource.FromFile("vibely_icon.png")
             : ImageSource.FromUri(new Uri(profile.ProfileImageUrl));
     }
 
