@@ -15,16 +15,6 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
     }
 
-    private IReadOnlyList<VisualElement> WordmarkCharacters =>
-    [
-        LetterV,
-        LetterI,
-        LetterB,
-        LetterE,
-        LetterL,
-        LetterY
-    ];
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -42,19 +32,15 @@ public partial class LoginPage : ContentPage
         BrandLogo.Opacity = 0;
         BrandLogo.Scale = 0.72;
         BrandLogo.Rotation = -10;
+        BrandWordmark.Opacity = 0;
+        BrandWordmark.TranslationY = 12;
 
         LoginCard.Opacity = 0;
         LoginCard.Scale = 0.95;
         LoginCard.TranslationY = 28;
 
-        WordmarkStroke.WidthRequest = 0;
-        WordmarkStroke.Opacity = 0;
-
-        foreach (var character in WordmarkCharacters)
-        {
-            character.Opacity = 0;
-            character.Scale = 0.75;
-        }
+        BrandAccent.Opacity = 0;
+        BrandAccent.ScaleX = 0.15;
 
         await Task.WhenAll(
             BrandSection.FadeToAsync(
@@ -84,7 +70,11 @@ public partial class LoginPage : ContentPage
                 Easing.CubicOut)
         );
 
-        await AnimateWordmarkAsync();
+        await Task.WhenAll(
+            BrandWordmark.FadeToAsync(1, 360, Easing.CubicOut),
+            BrandWordmark.TranslateToAsync(0, 0, 420, Easing.CubicOut),
+            BrandAccent.FadeToAsync(1, 300, Easing.CubicOut),
+            BrandAccent.ScaleXToAsync(1, 420, Easing.CubicInOut));
 
         await Task.WhenAll(
             LoginCard.FadeToAsync(
@@ -103,44 +93,6 @@ public partial class LoginPage : ContentPage
                 600,
                 Easing.CubicOut)
         );
-    }
-
-    private async Task AnimateWordmarkAsync()
-    {
-        foreach (var character in WordmarkCharacters)
-        {
-            await Task.WhenAll(
-                character.FadeToAsync(
-                    1,
-                    180,
-                    Easing.CubicOut),
-
-                character.TranslateToAsync(
-                    0,
-                    0,
-                    260,
-                    Easing.SpringOut),
-
-                character.ScaleToAsync(
-                    1,
-                    260,
-                    Easing.SpringOut),
-
-                character.RotateToAsync(
-                    0,
-                    260,
-                    Easing.CubicOut)
-            );
-
-            await Task.Delay(35);
-        }
-
-        WordmarkStroke.WidthRequest = 126;
-
-        await WordmarkStroke.FadeToAsync(
-            1,
-            420,
-            Easing.CubicInOut);
     }
 
     private async void LoginButton_Clicked(

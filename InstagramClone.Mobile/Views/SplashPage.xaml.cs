@@ -22,7 +22,7 @@ public partial class SplashPage : ContentPage
         {
             PrepareAnimation();
             await PlayEntranceAsync();
-            await Task.Delay(900);
+            await Task.Delay(700);
 
             var destination = await GetDestinationAsync();
             await SplashRoot.FadeToAsync(0, 260, Easing.CubicIn);
@@ -36,18 +36,16 @@ public partial class SplashPage : ContentPage
 
     private void PrepareAnimation()
     {
-        BrandArtwork.Opacity = 0;
-        BrandArtwork.Scale = 0.82;
-        BrandArtwork.TranslationY = 16;
-
+        BrandIcon.Opacity = 0;
+        BrandIcon.Scale = 0.72;
+        BrandIcon.Rotation = -8;
+        BrandLockup.Opacity = 0;
+        BrandLockup.TranslationY = 12;
         Tagline.Opacity = 0;
         Tagline.TranslationY = 12;
-
         AccentLine.Opacity = 0;
         AccentLine.ScaleX = 0.12;
-
         LoadingLabel.Opacity = 0;
-
         OuterHalo.Opacity = 0;
         OuterHalo.Scale = 0.72;
         InnerHalo.Opacity = 0;
@@ -61,21 +59,23 @@ public partial class SplashPage : ContentPage
             OuterHalo.ScaleToAsync(1, 1100, Easing.CubicOut),
             InnerHalo.FadeToAsync(0.9, 750, Easing.CubicOut),
             InnerHalo.ScaleToAsync(1, 1050, Easing.CubicOut),
-            BrandArtwork.FadeToAsync(1, 650, Easing.CubicOut),
-            BrandArtwork.ScaleToAsync(1, 950, Easing.SpringOut),
-            BrandArtwork.TranslateToAsync(0, 0, 850, Easing.CubicOut));
+            BrandIcon.FadeToAsync(1, 500, Easing.CubicOut),
+            BrandIcon.ScaleToAsync(1, 850, Easing.SpringOut),
+            BrandIcon.RotateToAsync(0, 850, Easing.CubicOut));
 
         await Task.WhenAll(
-            Tagline.FadeToAsync(1, 520, Easing.CubicOut),
-            Tagline.TranslateToAsync(0, 0, 620, Easing.CubicOut),
-            AccentLine.FadeToAsync(1, 450, Easing.CubicOut),
-            AccentLine.ScaleXToAsync(1, 700, Easing.CubicInOut),
-            LoadingLabel.FadeToAsync(1, 650, Easing.CubicOut));
+            BrandLockup.FadeToAsync(1, 450, Easing.CubicOut),
+            BrandLockup.TranslateToAsync(0, 0, 520, Easing.CubicOut),
+            Tagline.FadeToAsync(1, 500, Easing.CubicOut),
+            Tagline.TranslateToAsync(0, 0, 600, Easing.CubicOut),
+            AccentLine.FadeToAsync(1, 420, Easing.CubicOut),
+            AccentLine.ScaleXToAsync(1, 620, Easing.CubicInOut),
+            LoadingLabel.FadeToAsync(1, 600, Easing.CubicOut));
 
         await Task.WhenAll(
             OuterHalo.ScaleToAsync(1.05, 850, Easing.SinInOut),
             InnerHalo.ScaleToAsync(0.96, 850, Easing.SinInOut),
-            BrandArtwork.ScaleToAsync(1.015, 850, Easing.SinInOut));
+            BrandIcon.ScaleToAsync(1.015, 850, Easing.SinInOut));
     }
 
     private static async Task<string> GetDestinationAsync()
@@ -83,9 +83,7 @@ public partial class SplashPage : ContentPage
         try
         {
             var token = await SecureStorage.Default.GetAsync("auth_token");
-            return string.IsNullOrWhiteSpace(token)
-                ? "//LoginPage"
-                : "//MainPage";
+            return string.IsNullOrWhiteSpace(token) ? "//LoginPage" : "//MainPage";
         }
         catch
         {

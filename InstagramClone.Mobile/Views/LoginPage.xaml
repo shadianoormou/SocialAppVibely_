@@ -1,250 +1,106 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="InstagramClone.Mobile.Views.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    BackgroundColor="#07070B"
+    BackgroundColor="#08080D"
     Shell.NavBarIsVisible="False">
 
     <Grid>
-
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#07070B" Offset="0.00" />
-                <GradientStop Color="#171025" Offset="0.45" />
-                <GradientStop Color="#09090F" Offset="1.00" />
+                <GradientStop Color="#08080D" Offset="0" />
+                <GradientStop Color="#151023" Offset="0.48" />
+                <GradientStop Color="#09090F" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
 
         <Ellipse
             x:Name="TopGlow"
-            WidthRequest="350"
-            HeightRequest="350"
-            TranslationX="-145"
-            TranslationY="-155"
-            HorizontalOptions="Start"
-            VerticalOptions="Start"
-            Opacity="0.42">
-
-            <Ellipse.Fill>
-                <RadialGradientBrush>
-                    <GradientStop Color="#C026D3" Offset="0.00" />
-                    <GradientStop Color="#7C3AED" Offset="0.40" />
-                    <GradientStop Color="#007C3AED" Offset="1.00" />
-                </RadialGradientBrush>
-            </Ellipse.Fill>
-        </Ellipse>
-
-        <Ellipse
-            x:Name="BottomGlow"
             WidthRequest="330"
             HeightRequest="330"
-            TranslationX="135"
-            TranslationY="180"
+            TranslationX="-150"
+            TranslationY="-170"
+            HorizontalOptions="Start"
+            VerticalOptions="Start"
+            Opacity="0.28"
+            Fill="#9B7BFF" />
+        <Ellipse
+            x:Name="BottomGlow"
+            WidthRequest="300"
+            HeightRequest="300"
+            TranslationX="150"
+            TranslationY="210"
             HorizontalOptions="End"
             VerticalOptions="End"
-            Opacity="0.30">
-
-            <Ellipse.Fill>
-                <RadialGradientBrush>
-                    <GradientStop Color="#F43F8D" Offset="0.00" />
-                    <GradientStop Color="#9B7BFF" Offset="0.42" />
-                    <GradientStop Color="#008B5CF6" Offset="1.00" />
-                </RadialGradientBrush>
-            </Ellipse.Fill>
-        </Ellipse>
+            Opacity="0.20"
+            Fill="#F09AD5" />
 
         <ScrollView VerticalScrollBarVisibility="Never">
-
-            <VerticalStackLayout
-                Padding="26,42,26,32"
-                Spacing="22">
-
+            <VerticalStackLayout Padding="26,34,26,30" Spacing="20">
                 <VerticalStackLayout
                     x:Name="BrandSection"
-                    Opacity="0"
-                    TranslationY="-24"
                     HorizontalOptions="Center"
-                    Spacing="10">
-
+                    Spacing="11"
+                    Opacity="0"
+                    TranslationY="-20">
                     <Grid
                         x:Name="BrandLogo"
-                        WidthRequest="104"
-                        HeightRequest="104"
+                        WidthRequest="92"
+                        HeightRequest="92"
                         HorizontalOptions="Center">
-
-                        <Border Stroke="#70FFFFFF" StrokeThickness="1">
-
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#6D28D9" Offset="0.00" />
-                                    <GradientStop Color="#A855F7" Offset="0.48" />
-                                    <GradientStop Color="#EC4899" Offset="1.00" />
-                                </LinearGradientBrush>
-                            </Border.Background>
-
+                        <Border
+                            Margin="3"
+                            BackgroundColor="#1A122A"
+                            Stroke="#A77BFF"
+                            StrokeThickness="1">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="34" />
+                                <RoundRectangle CornerRadius="28" />
                             </Border.StrokeShape>
-
                             <Border.Shadow>
-                                <Shadow
-                                    Brush="#AA9333EA"
-                                    Offset="0,10"
-                                    Radius="28"
-                                    Opacity="0.90" />
+                                <Shadow Brush="#887B3AED" Offset="0,9" Radius="19" Opacity="0.72" />
                             </Border.Shadow>
                         </Border>
-
-                        <Border
-                            Margin="11"
-                            BackgroundColor="#25101018"
-                            Stroke="#50FFFFFF"
-                            StrokeThickness="1">
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="27" />
-                            </Border.StrokeShape>
-                        </Border>
-
-                        <Grid
-                            WidthRequest="65"
-                            HeightRequest="65"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center">
-
-                            <Border
-                                WidthRequest="14"
-                                HeightRequest="54"
-                                TranslationX="-14"
-                                TranslationY="-2"
-                                Rotation="-34"
-                                StrokeThickness="0"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center">
-
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="#FFFFFF" Offset="0.00" />
-                                        <GradientStop Color="#DDD6FE" Offset="1.00" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="7" />
-                                </Border.StrokeShape>
-                            </Border>
-
-                            <Border
-                                WidthRequest="14"
-                                HeightRequest="54"
-                                TranslationX="14"
-                                TranslationY="-2"
-                                Rotation="34"
-                                StrokeThickness="0"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center">
-
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="#FFFFFF" Offset="0.00" />
-                                        <GradientStop Color="#FBCFE8" Offset="1.00" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="7" />
-                                </Border.StrokeShape>
-                            </Border>
-
-                            <Ellipse
-                                WidthRequest="9"
-                                HeightRequest="9"
-                                TranslationY="27"
-                                Fill="White"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center">
-
-                                <Ellipse.Shadow>
-                                    <Shadow
-                                        Brush="#CCFFFFFF"
-                                        Radius="10"
-                                        Opacity="0.95" />
-                                </Ellipse.Shadow>
-                            </Ellipse>
-                        </Grid>
-
                         <Image
                             Source="vibely_icon.png"
-                            Aspect="AspectFill"
-                            Margin="7"
-                            Opacity="0.98"
-                            ZIndex="5" />
+                            WidthRequest="72"
+                            HeightRequest="72"
+                            Aspect="AspectFit"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
                     </Grid>
-
-                    <HorizontalStackLayout
-                        x:Name="WordmarkLetters"
-                        HorizontalOptions="Center"
-                        Spacing="0">
-
-                        <Label x:Name="LetterV" Text="V" FontFamily="OpenSansSemibold"
-                               FontSize="43" FontAttributes="Bold,Italic" TextColor="#FFFFFF"
-                               Opacity="0" TranslationY="18" Rotation="-8" />
-
-                        <Label x:Name="LetterI" Text="i" FontFamily="OpenSansSemibold"
-                               FontSize="42" FontAttributes="Bold,Italic" TextColor="#EDE9FE"
-                               Opacity="0" TranslationY="-14" Rotation="7" />
-
-                        <Label x:Name="LetterB" Text="b" FontFamily="OpenSansSemibold"
-                               FontSize="43" FontAttributes="Bold,Italic" TextColor="#DDD6FE"
-                               Opacity="0" TranslationY="18" Rotation="-7" />
-
-                        <Label x:Name="LetterE" Text="e" FontFamily="OpenSansSemibold"
-                               FontSize="43" FontAttributes="Bold,Italic" TextColor="#D8B4FE"
-                               Opacity="0" TranslationY="-14" Rotation="7" />
-
-                        <Label x:Name="LetterL" Text="l" FontFamily="OpenSansSemibold"
-                               FontSize="43" FontAttributes="Bold,Italic" TextColor="#F0ABFC"
-                               Opacity="0" TranslationY="18" Rotation="-6" />
-
-                        <Label x:Name="LetterY" Text="y" FontFamily="OpenSansSemibold"
-                               FontSize="43" FontAttributes="Bold,Italic" TextColor="#F9A8D4"
-                               Opacity="0" TranslationY="-14" Rotation="8" />
-                    </HorizontalStackLayout>
-
+                    <Label
+                        x:Name="BrandWordmark"
+                        Text="Vibely"
+                        FontFamily="OpenSansSemibold"
+                        FontSize="38"
+                        FontAttributes="Bold"
+                        CharacterSpacing="1"
+                        TextColor="#F8F1FA"
+                        HorizontalTextAlignment="Center" />
                     <Border
-                        x:Name="WordmarkStroke"
-                        WidthRequest="0"
-                        HeightRequest="5"
-                        Opacity="0"
-                        StrokeThickness="0"
-                        HorizontalOptions="Center">
-
+                        x:Name="BrandAccent"
+                        WidthRequest="58"
+                        HeightRequest="2"
+                        HorizontalOptions="Center"
+                        StrokeThickness="0">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="#7C3AED" Offset="0.00" />
-                                <GradientStop Color="#C026D3" Offset="0.52" />
-                                <GradientStop Color="#F43F8D" Offset="1.00" />
+                                <GradientStop Color="#9B7BFF" Offset="0" />
+                                <GradientStop Color="#D9B56D" Offset="0.5" />
+                                <GradientStop Color="#F0A6D5" Offset="1" />
                             </LinearGradientBrush>
                         </Border.Background>
-
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="3" />
+                            <RoundRectangle CornerRadius="2" />
                         </Border.StrokeShape>
-
-                        <Border.Shadow>
-                            <Shadow Brush="#AAEC4899" Offset="0,3" Radius="12" Opacity="0.90" />
-                        </Border.Shadow>
                     </Border>
-
                     <Label
                         Text="CREATE  •  CONNECT  •  INSPIRE"
                         FontFamily="OpenSansSemibold"
-                        FontSize="10"
-                        FontAttributes="Bold"
-                        CharacterSpacing="2.4"
-                        TextColor="#AAA5B5"
+                        FontSize="9"
+                        CharacterSpacing="2"
+                        TextColor="#8E869C"
                         HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
@@ -252,335 +108,117 @@
                     x:Name="LoginCard"
                     Padding="22"
                     Opacity="0"
-                    Scale="0.95"
-                    TranslationY="28"
-                    BackgroundColor="#E614141C"
-                    Stroke="#35FFFFFF"
+                    Scale="0.96"
+                    TranslationY="24"
+                    BackgroundColor="#E6171721"
+                    Stroke="#34FFFFFF"
                     StrokeThickness="1">
-
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="29" />
+                        <RoundRectangle CornerRadius="26" />
                     </Border.StrokeShape>
-
                     <Border.Shadow>
-                        <Shadow Brush="#85000000" Offset="0,14" Radius="28" Opacity="0.75" />
+                        <Shadow Brush="#A0000000" Offset="0,14" Radius="28" Opacity="0.7" />
                     </Border.Shadow>
 
-                    <VerticalStackLayout Spacing="16">
-
+                    <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="4">
-                            <Label
-                                Text="Welcome back"
-                                FontFamily="OpenSansSemibold"
-                                FontSize="27"
-                                FontAttributes="Bold"
-                                TextColor="White" />
-
-                            <Label
-                                Text="Sign in and continue your story."
-                                FontSize="14"
-                                TextColor="#AAA5B5" />
+                            <Label Text="Welcome back" FontFamily="OpenSansSemibold" FontSize="26" FontAttributes="Bold" TextColor="#FFFFFF" />
+                            <Label Text="Sign in to continue your visual world." FontSize="13" TextColor="#AAA3B4" />
                         </VerticalStackLayout>
 
-                        <Border
-                            HeightRequest="60"
-                            Padding="16,4"
-                            BackgroundColor="#E617171F"
-                            Stroke="#3C3C48"
-                            StrokeThickness="1">
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-
-                            <Entry
-                                x:Name="EmailEntry"
-                                Placeholder="Email or username"
-                                PlaceholderColor="#767681"
-                                TextColor="White"
-                                FontSize="15"
-                                BackgroundColor="Transparent"
-                                ClearButtonVisibility="WhileEditing"
-                                ReturnType="Next" />
+                        <Border HeightRequest="58" Padding="15,2" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Entry x:Name="EmailEntry" Placeholder="Email or username" PlaceholderColor="#767180" TextColor="#FFFFFF" FontSize="15" ClearButtonVisibility="WhileEditing" ReturnType="Next" />
                         </Border>
 
-                        <Border
-                            HeightRequest="60"
-                            Padding="16,4"
-                            BackgroundColor="#E617171F"
-                            Stroke="#3C3C48"
-                            StrokeThickness="1">
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-
+                        <Border HeightRequest="58" Padding="15,2" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                             <Grid ColumnDefinitions="*,Auto">
-
-                                <Entry
-                                    x:Name="PasswordEntry"
-                                    Grid.Column="0"
-                                    Placeholder="Password"
-                                    PlaceholderColor="#767681"
-                                    TextColor="White"
-                                    FontSize="15"
-                                    BackgroundColor="Transparent"
-                                    IsPassword="True"
-                                    ReturnType="Go" />
-
-                                <Button
-                                    x:Name="PasswordToggleButton"
-                                    Grid.Column="1"
-                                    Text="Show"
-                                    FontSize="12"
-                                    FontAttributes="Bold"
-                                    TextColor="#C4B5FD"
-                                    BackgroundColor="Transparent"
-                                    Padding="10,0"
-                                    Clicked="PasswordToggleButton_Clicked" />
+                                <Entry x:Name="PasswordEntry" Grid.Column="0" Placeholder="Password" PlaceholderColor="#767180" TextColor="#FFFFFF" FontSize="15" BackgroundColor="Transparent" IsPassword="True" ReturnType="Go" />
+                                <Button x:Name="PasswordToggleButton" Grid.Column="1" Text="Show" FontSize="12" FontAttributes="Bold" TextColor="#CDBDFF" BackgroundColor="Transparent" Padding="8,0" Clicked="PasswordToggleButton_Clicked" />
                             </Grid>
                         </Border>
 
-                        <Label
-                            Text="Forgot password?"
-                            FontSize="14"
-                            FontAttributes="Bold"
-                            TextColor="#C4B5FD"
-                            HorizontalOptions="End" />
+                        <Label Text="Forgot password?" FontSize="13" FontAttributes="Bold" TextColor="#CDBDFF" HorizontalOptions="End" />
 
                         <Button
                             x:Name="LoginButton"
                             Text="Sign in"
-                            HeightRequest="58"
+                            HeightRequest="56"
                             FontSize="16"
                             FontAttributes="Bold"
-                            TextColor="White"
-                            CornerRadius="18"
+                            TextColor="#FFFFFF"
+                            CornerRadius="17"
                             Clicked="LoginButton_Clicked">
-
                             <Button.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <GradientStop Color="#7C3AED" Offset="0.00" />
-                                    <GradientStop Color="#A855F7" Offset="0.52" />
-                                    <GradientStop Color="#EC4899" Offset="1.00" />
+                                    <GradientStop Color="#7956E8" Offset="0" />
+                                    <GradientStop Color="#A06AF2" Offset="0.52" />
+                                    <GradientStop Color="#E77ABF" Offset="1" />
                                 </LinearGradientBrush>
                             </Button.Background>
-
                             <Button.Shadow>
-                                <Shadow Brush="#908B5CF6" Offset="0,8" Radius="18" Opacity="0.85" />
+                                <Shadow Brush="#887B5CF6" Offset="0,8" Radius="17" Opacity="0.8" />
                             </Button.Shadow>
                         </Button>
 
-                        <ActivityIndicator
-                            x:Name="LoginActivityIndicator"
-                            IsVisible="False"
-                            IsRunning="False"
-                            Color="#C4B5FD"
-                            HorizontalOptions="Center" />
+                        <ActivityIndicator x:Name="LoginActivityIndicator" IsVisible="False" IsRunning="False" Color="#D2C4FF" HorizontalOptions="Center" />
 
-                        <Grid
-                            ColumnDefinitions="*,Auto,*"
-                            ColumnSpacing="12"
-                            VerticalOptions="Center">
-
-                            <BoxView Grid.Column="0" HeightRequest="1" Color="#3F3F49" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="or sign in with" FontSize="12" TextColor="#777782" />
-                            <BoxView Grid.Column="2" HeightRequest="1" Color="#3F3F49" VerticalOptions="Center" />
+                        <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10" Margin="0,2,0,0">
+                            <BoxView Grid.Column="0" HeightRequest="1" Color="#3A3744" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="or continue with" FontSize="11" TextColor="#777181" />
+                            <BoxView Grid.Column="2" HeightRequest="1" Color="#3A3744" VerticalOptions="Center" />
                         </Grid>
 
-                        <Border
-                            x:Name="GoogleLoginCard"
-                            HeightRequest="59"
-                            Padding="17,0"
-                            BackgroundColor="#FFFFFF"
-                            Stroke="#E4E4E7"
-                            StrokeThickness="1">
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-
-                            <Border.Shadow>
-                                <Shadow Brush="#48000000" Offset="0,7" Radius="15" Opacity="0.50" />
-                            </Border.Shadow>
-
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="GoogleLogin_Tapped" />
-                            </Border.GestureRecognizers>
-
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="13">
-
-                                <Border
-                                    Grid.Column="0"
-                                    WidthRequest="35"
-                                    HeightRequest="35"
-                                    BackgroundColor="#FFFFFF"
-                                    Stroke="#16000000"
-                                    StrokeThickness="1"
-                                    VerticalOptions="Center">
-
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="11" />
-                                    </Border.StrokeShape>
-
-                                    <Image
-                                        Source="vibely_icon.png"
-                                        WidthRequest="22"
-                                        HeightRequest="22"
-                                        Aspect="AspectFit"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center" />
+                        <Border x:Name="GoogleLoginCard" HeightRequest="56" Padding="15,0" BackgroundColor="#FFFFFF" Stroke="#E4E4E7" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="GoogleLogin_Tapped" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0" WidthRequest="34" HeightRequest="34" BackgroundColor="#FFFFFF" Stroke="#D8D8DD" StrokeThickness="1" VerticalOptions="Center">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
+                                    <Label Text="G" FontFamily="OpenSansSemibold" FontSize="20" FontAttributes="Bold" TextColor="#4285F4" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                                 </Border>
-
-                                <Label
-                                    Grid.Column="1"
-                                    Text="Sign in with Google"
-                                    FontSize="15"
-                                    FontAttributes="Bold"
-                                    TextColor="#18181B"
-                                    VerticalOptions="Center"
-                                    HorizontalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Continue with Google" FontSize="14" FontAttributes="Bold" TextColor="#18181B" VerticalOptions="Center" HorizontalTextAlignment="Center" />
                             </Grid>
                         </Border>
 
-                        <Border
-                            x:Name="FacebookLoginCard"
-                            HeightRequest="59"
-                            Padding="17,0"
-                            Stroke="#508DCBFF"
-                            StrokeThickness="1">
-
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#2374E1" Offset="0.00" />
-                                    <GradientStop Color="#166FE5" Offset="0.55" />
-                                    <GradientStop Color="#0754C7" Offset="1.00" />
-                                </LinearGradientBrush>
-                            </Border.Background>
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-
-                            <Border.Shadow>
-                                <Shadow Brush="#802374E1" Offset="0,8" Radius="18" Opacity="0.80" />
-                            </Border.Shadow>
-
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="FacebookLogin_Tapped" />
-                            </Border.GestureRecognizers>
-
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="13">
-
-                                <Border
-                                    Grid.Column="0"
-                                    WidthRequest="35"
-                                    HeightRequest="35"
-                                    BackgroundColor="White"
-                                    StrokeThickness="0"
-                                    VerticalOptions="Center">
-
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="11" />
-                                    </Border.StrokeShape>
-
-                                    <Image
-                                        Source="vibely_icon.png"
-                                        WidthRequest="23"
-                                        HeightRequest="23"
-                                        Aspect="AspectFit"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center" />
+                        <Border x:Name="FacebookLoginCard" HeightRequest="56" Padding="15,0" BackgroundColor="#1877F2" Stroke="#5E9EFF" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="FacebookLogin_Tapped" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0" WidthRequest="34" HeightRequest="34" BackgroundColor="#FFFFFF" StrokeThickness="0" VerticalOptions="Center">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
+                                    <Label Text="f" FontFamily="OpenSansSemibold" FontSize="23" FontAttributes="Bold" TextColor="#1877F2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                                 </Border>
-
-                                <Label
-                                    Grid.Column="1"
-                                    Text="Sign in with Facebook"
-                                    FontSize="15"
-                                    FontAttributes="Bold"
-                                    TextColor="White"
-                                    VerticalOptions="Center"
-                                    HorizontalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Continue with Facebook" FontSize="14" FontAttributes="Bold" TextColor="#FFFFFF" VerticalOptions="Center" HorizontalTextAlignment="Center" />
                             </Grid>
                         </Border>
 
-                        <Border
-                            x:Name="PhoneLoginCard"
-                            HeightRequest="59"
-                            Padding="17,0"
-                            BackgroundColor="#17151F"
-                            Stroke="#514366"
-                            StrokeThickness="1">
-
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="PhoneLogin_Tapped" />
-                            </Border.GestureRecognizers>
-
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="13">
-                                <Border
-                                    Grid.Column="0"
-                                    WidthRequest="35"
-                                    HeightRequest="35"
-                                    BackgroundColor="#2D223A"
-                                    Stroke="#7C3AED"
-                                    StrokeThickness="1"
-                                    VerticalOptions="Center">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="11" />
-                                    </Border.StrokeShape>
-                                    <Label Text="⌕" TextColor="#F0B7D0" FontSize="20" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                        <Border x:Name="PhoneLoginCard" HeightRequest="56" Padding="15,0" BackgroundColor="#17151F" Stroke="#514366" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="PhoneLogin_Tapped" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Grid.Column="0" WidthRequest="34" HeightRequest="34" BackgroundColor="#29213A" Stroke="#8060D2" StrokeThickness="1" VerticalOptions="Center">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
+                                    <Label Text="+" FontSize="21" FontAttributes="Bold" TextColor="#E5C8E8" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                                 </Border>
-                                <Label
-                                    Grid.Column="1"
-                                    Text="Continue with phone number"
-                                    FontSize="15"
-                                    FontAttributes="Bold"
-                                    TextColor="White"
-                                    VerticalOptions="Center"
-                                    HorizontalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Continue with phone number" FontSize="14" FontAttributes="Bold" TextColor="#FFFFFF" VerticalOptions="Center" HorizontalTextAlignment="Center" />
                             </Grid>
                         </Border>
 
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
-
-                            <Label
-                                Text="New to Vibely?"
-                                TextColor="#AAA5B5"
-                                VerticalOptions="Center" />
-
-                            <Label
-                                Text="Create account"
-                                TextColor="#C4B5FD"
-                                FontAttributes="Bold"
-                                VerticalOptions="Center">
-
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="Register_Tapped" />
-                                </Label.GestureRecognizers>
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,3,0,0">
+                            <Label Text="New to Vibely?" TextColor="#AAA3B4" VerticalOptions="Center" />
+                            <Label Text="Create account" TextColor="#D0C0FF" FontAttributes="Bold" VerticalOptions="Center">
+                                <Label.GestureRecognizers><TapGestureRecognizer Tapped="Register_Tapped" /></Label.GestureRecognizers>
                             </Label>
                         </HorizontalStackLayout>
-
-                        <Label
-                            Text="Explore Vibely as a guest  →"
-                            TextColor="#F0ABFC"
-                            FontAttributes="Bold"
-                            HorizontalOptions="Center">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Guest_Tapped" />
-                            </Label.GestureRecognizers>
+                        <Label Text="Explore Vibely as a guest  →" TextColor="#E2A9D6" FontAttributes="Bold" HorizontalOptions="Center">
+                            <Label.GestureRecognizers><TapGestureRecognizer Tapped="Guest_Tapped" /></Label.GestureRecognizers>
                         </Label>
                     </VerticalStackLayout>
                 </Border>
 
-                <Label
-                    Text="By continuing, you agree to Vibely's Terms and Privacy Policy."
-                    FontSize="11"
-                    TextColor="#777782"
-                    HorizontalTextAlignment="Center" />
+                <Label Text="By continuing, you agree to Vibely's Terms and Privacy Policy." FontSize="10.5" TextColor="#777181" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

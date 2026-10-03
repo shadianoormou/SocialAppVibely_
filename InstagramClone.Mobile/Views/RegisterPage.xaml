@@ -1,31 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="InstagramClone.Mobile.Views.RegisterPage"
-             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             BackgroundColor="#0B0A10"
-             Shell.NavBarIsVisible="False">
-    <ScrollView VerticalScrollBarVisibility="Never">
-        <VerticalStackLayout Padding="24,34,24,30" Spacing="22">
-            <Button Text="‹  Back to sign in" TextColor="#C4B5FD" BackgroundColor="Transparent" FontSize="14" HorizontalOptions="Start" Padding="0" Clicked="BackButton_Clicked" />
-            <Image Source="vibely_logo.png" WidthRequest="190" HeightRequest="78" Aspect="AspectFit" HorizontalOptions="Center" />
-            <VerticalStackLayout Spacing="8" Margin="0,16,0,8">
-                <Label Text="Your world starts here." TextColor="White" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="30" />
-                <Label Text="Create a space for the things that move you." TextColor="#A8A3B3" FontSize="14" />
-            </VerticalStackLayout>
-            <Border Padding="20" BackgroundColor="#15151D" Stroke="#352A48" StrokeThickness="1">
-                <Border.StrokeShape><RoundRectangle CornerRadius="26" /></Border.StrokeShape>
-                <VerticalStackLayout Spacing="14">
-                    <Label Text="Create your account" TextColor="White" FontSize="18" FontAttributes="Bold" />
-                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="FullNameEntry" Placeholder="Full name" PlaceholderColor="#777181" TextColor="White" /></Border>
-                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="UserNameEntry" Placeholder="Username" PlaceholderColor="#777181" TextColor="White" /></Border>
-                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="EmailEntry" Placeholder="Email address" PlaceholderColor="#777181" TextColor="White" Keyboard="Email" /></Border>
-                    <Border HeightRequest="56" Padding="14,0" BackgroundColor="#1C1B25" Stroke="#3A3448" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="PasswordEntry" Placeholder="Password (6+ characters)" PlaceholderColor="#777181" TextColor="White" IsPassword="True" /></Border>
-                    <Button x:Name="CreateAccountButton" Text="Create account" HeightRequest="56" CornerRadius="17" FontAttributes="Bold" FontSize="15" TextColor="White" Clicked="CreateAccountButton_Clicked"><Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#7C3AED" Offset="0" /><GradientStop Color="#EC4899" Offset="1" /></LinearGradientBrush></Button.Background></Button>
-                    <Button x:Name="PhoneRegisterButton" Text="Sign up with phone number" HeightRequest="50" CornerRadius="15" FontAttributes="Bold" FontSize="13" TextColor="#C4B5FD" BackgroundColor="#1C1B25" BorderColor="#514366" BorderWidth="1" Clicked="PhoneRegisterButton_Clicked" />
-                    <ActivityIndicator x:Name="RegisterActivityIndicator" IsVisible="False" IsRunning="False" Color="#C4B5FD" HorizontalOptions="Center" />
-                    <Label Text="By joining, you agree to Vibely's community guidelines." TextColor="#777181" FontSize="11" HorizontalTextAlignment="Center" />
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="InstagramClone.Mobile.Views.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#08080D"
+    Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#08080D" Offset="0" />
+                <GradientStop Color="#171026" Offset="0.48" />
+                <GradientStop Color="#09090F" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Ellipse WidthRequest="350" HeightRequest="350" TranslationX="-170" TranslationY="-190" HorizontalOptions="Start" VerticalOptions="Start" Fill="#9B7BFF" Opacity="0.22" />
+        <Ellipse WidthRequest="300" HeightRequest="300" TranslationX="160" TranslationY="230" HorizontalOptions="End" VerticalOptions="End" Fill="#F09AD5" Opacity="0.16" />
+
+        <ScrollView VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Padding="26,28,26,34" Spacing="18">
+                <Button
+                    x:Name="BackButton"
+                    Text="‹  Back to sign in"
+                    TextColor="#CDBDFF"
+                    BackgroundColor="Transparent"
+                    FontSize="14"
+                    HorizontalOptions="Start"
+                    Padding="0"
+                    Clicked="BackButton_Clicked" />
+
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="9" Margin="0,2,0,8">
+                    <Grid WidthRequest="82" HeightRequest="82" HorizontalOptions="Center">
+                        <Border Margin="3" BackgroundColor="#1A122A" Stroke="#A77BFF" StrokeThickness="1">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="26" /></Border.StrokeShape>
+                            <Border.Shadow><Shadow Brush="#887B3AED" Offset="0,8" Radius="18" Opacity="0.72" /></Border.Shadow>
+                        </Border>
+                        <Image Source="vibely_icon.png" WidthRequest="64" HeightRequest="64" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Grid>
+                    <Label Text="Vibely" FontFamily="OpenSansSemibold" FontSize="35" FontAttributes="Bold" CharacterSpacing="1" TextColor="#F8F1FA" HorizontalTextAlignment="Center" />
+                    <Label Text="Your visual world, beautifully connected." FontSize="12.5" TextColor="#A9A1B4" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
-    </ScrollView>
+
+                <Border Padding="21" BackgroundColor="#E6171721" Stroke="#34FFFFFF" StrokeThickness="1">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="26" /></Border.StrokeShape>
+                    <Border.Shadow><Shadow Brush="#A0000000" Offset="0,14" Radius="28" Opacity="0.7" /></Border.Shadow>
+                    <VerticalStackLayout Spacing="13">
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Create your account" TextColor="#FFFFFF" FontFamily="OpenSansSemibold" FontSize="23" FontAttributes="Bold" />
+                            <Label Text="A beautiful space for the things that move you." TextColor="#AAA3B4" FontSize="13" />
+                        </VerticalStackLayout>
+
+                        <Border HeightRequest="56" Padding="14,1" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="FullNameEntry" Placeholder="Full name" PlaceholderColor="#777180" TextColor="#FFFFFF" FontSize="14.5" /></Border>
+                        <Border HeightRequest="56" Padding="14,1" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="UserNameEntry" Placeholder="Username" PlaceholderColor="#777180" TextColor="#FFFFFF" FontSize="14.5" /></Border>
+                        <Border HeightRequest="56" Padding="14,1" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="EmailEntry" Placeholder="Email address" PlaceholderColor="#777180" TextColor="#FFFFFF" FontSize="14.5" Keyboard="Email" /></Border>
+                        <Border HeightRequest="56" Padding="14,1" BackgroundColor="#171720" Stroke="#3B3748" StrokeThickness="1"><Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape><Entry x:Name="PasswordEntry" Placeholder="Password (6+ characters)" PlaceholderColor="#777180" TextColor="#FFFFFF" FontSize="14.5" IsPassword="True" /></Border>
+
+                        <Button x:Name="CreateAccountButton" Text="Create account" HeightRequest="56" CornerRadius="17" FontAttributes="Bold" FontSize="15.5" TextColor="#FFFFFF" Clicked="CreateAccountButton_Clicked">
+                            <Button.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#7956E8" Offset="0" /><GradientStop Color="#A06AF2" Offset="0.52" /><GradientStop Color="#E77ABF" Offset="1" /></LinearGradientBrush></Button.Background>
+                            <Button.Shadow><Shadow Brush="#887B5CF6" Offset="0,8" Radius="17" Opacity="0.8" /></Button.Shadow>
+                        </Button>
+                        <ActivityIndicator x:Name="RegisterActivityIndicator" IsVisible="False" IsRunning="False" Color="#D2C4FF" HorizontalOptions="Center" />
+
+                        <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10" Margin="0,2,0,0"><BoxView Grid.Column="0" HeightRequest="1" Color="#3A3744" VerticalOptions="Center" /><Label Grid.Column="1" Text="or" FontSize="11" TextColor="#777181" /><BoxView Grid.Column="2" HeightRequest="1" Color="#3A3744" VerticalOptions="Center" /></Grid>
+                        <Button x:Name="PhoneRegisterButton" Text="Sign up with phone number" HeightRequest="52" CornerRadius="16" FontAttributes="Bold" FontSize="13.5" TextColor="#D2C4FF" BackgroundColor="#17151F" BorderColor="#514366" BorderWidth="1" Clicked="PhoneRegisterButton_Clicked" />
+                        <Label Text="By joining, you agree to Vibely's community guidelines." TextColor="#777181" FontSize="10.5" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
