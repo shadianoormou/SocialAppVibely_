@@ -1,3 +1,5 @@
+using InstagramClone.Mobile.Services;
+
 namespace InstagramClone.Mobile.Views;
 
 public partial class SplashPage : ContentPage

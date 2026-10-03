@@ -55,17 +55,17 @@ jobs:
             -o "$GITHUB_WORKSPACE/out"
 
       - name: Rename APK
-        run: mv out/com.vibely.social-Signed.apk out/Vibely-1.0.4-android.apk
+        run: mv out/com.vibely.social-Signed.apk out/Vibely-1.0.5-android.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Vibely-1.0.4-android
-          path: out/Vibely-1.0.4-android.apk
+          name: Vibely-1.0.5-android
+          path: out/Vibely-1.0.5-android.apk
 
       - name: Attach APK to GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: out/Vibely-1.0.4-android.apk
+          files: out/Vibely-1.0.5-android.apk
           generate_release_notes: true
