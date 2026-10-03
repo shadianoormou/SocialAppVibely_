@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: vibely-social
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DatabaseProvider
+        value: Postgres
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: vibely-db
+          property: connectionString
+      - key: MediaStorage__Provider
+        value: Database
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: InstagramClone.Api
+      - key: Jwt__Audience
+        value: InstagramClone.Mobile
+      - key: Jwt__ExpiryMinutes
+        value: "1440"
+
+databases:
+  - name: vibely-db
+    plan: free
+    region: singapore
+    databaseName: vibely
+    user: vibely

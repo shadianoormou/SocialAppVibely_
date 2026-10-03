@@ -179,7 +179,7 @@ public class PostsController : ControllerBase
         _dbContext.Notifications.RemoveRange(notifications);
         _dbContext.Posts.Remove(post);
         await _dbContext.SaveChangesAsync();
-        TryDeleteLocalMedia(post.MediaUrl);
+        await DeleteMediaAsync(post.MediaUrl);
         return NoContent();
     }
 
@@ -316,10 +316,24 @@ public class PostsController : ControllerBase
     private int? GetOptionalUserId() =>
         int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null;
 
-    private void TryDeleteLocalMedia(string mediaUrl)
+    private async Task DeleteMediaAsync(string mediaUrl)
     {
-        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri) ||
-            !uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri))
+            return;
+
+        if (uri.AbsolutePath.StartsWith("/api/media/", StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(Path.GetFileName(uri.LocalPath), out var assetId))
+        {
+            var asset = await _dbContext.MediaAssets.FindAsync(assetId);
+            if (asset is not null)
+            {
+                _dbContext.MediaAssets.Remove(asset);
+                await _dbContext.SaveChangesAsync();
+            }
+            return;
+        }
+
+        if (!uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             return;
 
         var fileName = Path.GetFileName(uri.LocalPath);

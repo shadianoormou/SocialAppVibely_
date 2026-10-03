@@ -112,17 +112,31 @@ public class StoriesController : ControllerBase
 
         _dbContext.Stories.Remove(story);
         await _dbContext.SaveChangesAsync();
-        TryDeleteLocalMedia(story.MediaUrl);
+        await DeleteMediaAsync(story.MediaUrl);
         return NoContent();
     }
 
     private bool TryGetUserId(out int userId) =>
         int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
 
-    private void TryDeleteLocalMedia(string mediaUrl)
+    private async Task DeleteMediaAsync(string mediaUrl)
     {
-        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri) ||
-            !uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+        if (!Uri.TryCreate(mediaUrl, UriKind.Absolute, out var uri))
+            return;
+
+        if (uri.AbsolutePath.StartsWith("/api/media/", StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(Path.GetFileName(uri.LocalPath), out var assetId))
+        {
+            var asset = await _dbContext.MediaAssets.FindAsync(assetId);
+            if (asset is not null)
+            {
+                _dbContext.MediaAssets.Remove(asset);
+                await _dbContext.SaveChangesAsync();
+            }
+            return;
+        }
+
+        if (!uri.AbsolutePath.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             return;
         var fileName = Path.GetFileName(uri.LocalPath);
         if (string.IsNullOrWhiteSpace(fileName))

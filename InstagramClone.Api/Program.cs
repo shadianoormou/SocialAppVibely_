@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using System.Text;
 using InstagramClone.Api.Data;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +16,17 @@ var connectionString =
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT key was not configured.");
 
+var databaseProvider = builder.Configuration["DatabaseProvider"]
+    ?? (builder.Environment.IsDevelopment() ? "Sqlite" : "SqlServer");
+
+if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+    connectionString = NormalizePostgresConnectionString(connectionString);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    if (builder.Environment.IsDevelopment())
+    if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+        options.UseNpgsql(connectionString);
+    else if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
         options.UseSqlite(connectionString);
     else
         options.UseSqlServer(connectionString);
@@ -85,13 +95,22 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                               ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (app.Environment.IsDevelopment())
+    if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+        dbContext.Database.EnsureCreated();
+    else if (app.Environment.IsDevelopment())
     {
         dbContext.Database.EnsureCreated();
         EnsureDevelopmentProfileColumns(dbContext);
@@ -105,11 +124,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 if (app.Environment.IsDevelopment())
-{
-    app.MapGet("/", () => Results.Redirect("http://127.0.0.1:8765/"));
     app.MapOpenApi();
-}
 
+app.UseForwardedHeaders();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("LocalPreview");
 app.UseHttpsRedirection();
@@ -120,6 +138,24 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static string NormalizePostgresConnectionString(string connectionString)
+{
+    if (!Uri.TryCreate(connectionString, UriKind.Absolute, out var uri) ||
+        uri.Scheme is not ("postgres" or "postgresql"))
+        return connectionString;
+
+    var credentials = uri.UserInfo.Split(':', 2);
+    return new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.IsDefaultPort ? 5432 : uri.Port,
+        Database = uri.AbsolutePath.Trim('/'),
+        Username = Uri.UnescapeDataString(credentials[0]),
+        Password = credentials.Length > 1 ? Uri.UnescapeDataString(credentials[1]) : string.Empty,
+        SslMode = SslMode.Prefer
+    }.ConnectionString;
+}
 
 static void EnsureDevelopmentProfileColumns(AppDbContext dbContext)
 {

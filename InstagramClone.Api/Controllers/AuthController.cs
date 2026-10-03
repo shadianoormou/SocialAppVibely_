@@ -342,7 +342,7 @@ public class AuthController : ControllerBase
             await _dbContext.SaveChangesAsync();
             var auth = CreateAuthResponse(user);
             return oauthState.IsWebClient
-                ? Redirect($"http://127.0.0.1:8765/#oauth=success&token={Uri.EscapeDataString(auth.Token)}&userId={auth.UserId}&userName={Uri.EscapeDataString(auth.UserName)}")
+                ? Redirect($"{GetWebClientBaseUrl()}/#oauth=success&token={Uri.EscapeDataString(auth.Token)}&userId={auth.UserId}&userName={Uri.EscapeDataString(auth.UserName)}")
                 : Redirect($"vibely://auth?token={Uri.EscapeDataString(auth.Token)}&userId={auth.UserId}&userName={Uri.EscapeDataString(auth.UserName)}");
         }
         catch
@@ -354,8 +354,20 @@ public class AuthController : ControllerBase
     private IActionResult OAuthErrorRedirect(OAuthState oauthState, string error)
     {
         return oauthState.IsWebClient
-            ? Redirect($"http://127.0.0.1:8765/#oauth=error&message={Uri.EscapeDataString(error)}")
+            ? Redirect($"{GetWebClientBaseUrl()}/#oauth=error&message={Uri.EscapeDataString(error)}")
             : Redirect($"vibely://auth?error={Uri.EscapeDataString(error)}");
+    }
+
+    private string GetWebClientBaseUrl()
+    {
+        var configured = _configuration["Frontend:BaseUrl"]?.TrimEnd('/');
+        if (!string.IsNullOrWhiteSpace(configured))
+            return configured;
+
+        var renderHost = _configuration["RENDER_EXTERNAL_HOSTNAME"];
+        return string.IsNullOrWhiteSpace(renderHost)
+            ? "http://127.0.0.1:8765"
+            : $"https://{renderHost}";
     }
 
     private async Task<JsonDocument?> ExchangeCodeAsync(

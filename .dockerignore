@@ -1,0 +1,9 @@
+.git
+.gitignore
+**/bin
+**/obj
+**/*.db
+**/*.db-shm
+**/*.db-wal
+InstagramClone.Api/wwwroot/uploads/*
+!InstagramClone.Api/wwwroot/uploads/.gitkeep

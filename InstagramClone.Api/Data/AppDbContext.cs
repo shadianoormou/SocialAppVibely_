@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
     public DbSet<FollowRequest> FollowRequests => Set<FollowRequest>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,6 +129,12 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(x => new { x.SenderId, x.RecipientId, x.CreatedAtUtc });
             entity.HasIndex(x => new { x.RecipientId, x.ReadAtUtc });
+        });
+
+        modelBuilder.Entity<MediaAsset>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.HasIndex(x => new { x.OwnerId, x.CreatedAtUtc });
         });
     }
 }

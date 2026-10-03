@@ -200,7 +200,7 @@ function openDeletePostConfirmation(post){const title=document.getElementById('s
 async function deletePreviewPost(postId){try{await authJson('api/posts/'+postId,{method:'DELETE'});closeModal();await loadRealFeed();await loadRealProfile();showToast('Post deleted')}catch(error){showToast(error.message||'Could not delete post')}}
 function closeModal(e){if(!e||e.target.id==='sheet'||e.target.classList.contains('close'))document.getElementById('sheet').classList.remove('open')}
 function showToast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>x.classList.remove('show'),1800)}
-const apiBase='http://127.0.0.1:5112/';
+const apiBase=['127.0.0.1','localhost'].includes(location.hostname)?'http://127.0.0.1:5112/':location.origin+'/';
 function getPreviewSession(){try{return JSON.parse(localStorage.getItem('vibely_session')||'null')}catch{return null}}
 function getPreviewToken(){return getPreviewSession()?.token||localStorage.getItem('vibely_token')||''}
 function apiErrorMessage(body,fallback='Something went wrong.'){if(body?.message)return body.message;const messages=body?.errors?Object.values(body.errors).flat().filter(Boolean):[];return messages.length?messages.join(' '):fallback}
