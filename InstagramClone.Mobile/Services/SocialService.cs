@@ -20,14 +20,18 @@ public class SocialService
     public async Task<IReadOnlyList<FeedPost>> GetFeedAsync()
     {
         await AddTokenAsync();
-        return await _httpClient.GetFromJsonAsync<List<FeedPost>>("api/feed?take=30")
+        using var response = await _httpClient.GetAsync("api/feed?take=30");
+        EnsureSuccess(response);
+        return await response.Content.ReadFromJsonAsync<List<FeedPost>>()
             ?? [];
     }
 
     public async Task<IReadOnlyList<Story>> GetStoriesAsync()
     {
         await AddTokenAsync();
-        return await _httpClient.GetFromJsonAsync<List<Story>>("api/stories")
+        using var response = await _httpClient.GetAsync("api/stories");
+        EnsureSuccess(response);
+        return await response.Content.ReadFromJsonAsync<List<Story>>()
             ?? [];
     }
 
@@ -35,7 +39,7 @@ public class SocialService
     {
         await AddTokenAsync();
         using var response = await _httpClient.GetAsync("api/users/me");
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         return await response.Content.ReadFromJsonAsync<UserProfile>();
     }
 
@@ -43,22 +47,24 @@ public class SocialService
     {
         await AddTokenAsync();
         using var response = await _httpClient.PutAsJsonAsync("api/users/me", request);
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         return await response.Content.ReadFromJsonAsync<UserProfile>();
     }
 
     public async Task<IReadOnlyList<FeedPost>> GetMyPostsAsync(string tab = "posts")
     {
         await AddTokenAsync();
-        return await _httpClient.GetFromJsonAsync<List<FeedPost>>(
-            $"api/users/me/posts?tab={Uri.EscapeDataString(tab)}") ?? [];
+        using var response = await _httpClient.GetAsync(
+            $"api/users/me/posts?tab={Uri.EscapeDataString(tab)}");
+        EnsureSuccess(response);
+        return await response.Content.ReadFromJsonAsync<List<FeedPost>>() ?? [];
     }
 
     public async Task<(bool Liked, int LikesCount)> ToggleLikeAsync(int postId)
     {
         await AddTokenAsync();
         using var response = await _httpClient.PostAsync($"api/posts/{postId}/like", null);
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         var result = await response.Content.ReadFromJsonAsync<LikeResult>();
         return (result?.Liked ?? false, result?.LikesCount ?? 0);
     }
@@ -67,7 +73,7 @@ public class SocialService
     {
         await AddTokenAsync();
         using var response = await _httpClient.PostAsync($"api/posts/{postId}/save", null);
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         var result = await response.Content.ReadFromJsonAsync<SaveResult>();
         return result?.Saved ?? false;
     }
@@ -78,7 +84,7 @@ public class SocialService
         using var response = await _httpClient.PostAsJsonAsync(
             $"api/posts/{postId}/comments",
             new { Text = text });
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         return await response.Content.ReadFromJsonAsync<Comment>();
     }
 
@@ -86,7 +92,7 @@ public class SocialService
     {
         await AddTokenAsync();
         using var response = await _httpClient.PostAsJsonAsync("api/posts", request);
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         return await response.Content.ReadFromJsonAsync<FeedPost>();
     }
 
@@ -102,7 +108,7 @@ public class SocialService
         content.Add(fileContent, "file", fileName);
 
         using var response = await _httpClient.PostAsync("api/media/upload", content);
-        response.EnsureSuccessStatusCode();
+        EnsureSuccess(response);
         var result = await response.Content.ReadFromJsonAsync<MediaResult>()
             ?? throw new InvalidOperationException("The media service returned an empty response.");
         return (result.MediaUrl, result.MediaType);
@@ -115,6 +121,14 @@ public class SocialService
             string.IsNullOrWhiteSpace(token)
                 ? null
                 : new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    private static void EnsureSuccess(HttpResponseMessage response)
+    {
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            throw new SessionExpiredException();
+
+        response.EnsureSuccessStatusCode();
     }
 
     private static string GetBaseAddress()

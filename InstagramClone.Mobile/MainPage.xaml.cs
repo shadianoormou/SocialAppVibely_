@@ -36,14 +36,20 @@ public partial class MainPage : ContentPage
 
         try
         {
-            var postsTask = _socialService.GetFeedAsync();
-            var storiesTask = _socialService.GetStoriesAsync();
-            await Task.WhenAll(postsTask, storiesTask);
-            var posts = await postsTask;
-            var stories = await storiesTask;
+            var posts = await _socialService.GetFeedAsync();
+            IReadOnlyList<Story> stories = [];
+
+            if (await SessionStore.HasTokenAsync())
+                stories = await _socialService.GetStoriesAsync();
+
             _feed.Clear();
             _feed.AddRange(posts);
             RenderLiveFeed(stories);
+        }
+        catch (SessionExpiredException)
+        {
+            await SessionStore.ClearAsync();
+            await Shell.Current.GoToAsync("//LoginPage");
         }
         catch (HttpRequestException)
         {
@@ -1037,9 +1043,7 @@ public partial class MainPage : ContentPage
         var confirm = await DisplayAlertAsync("Sign out?", "You can always come back to your visual world.", "Sign out", "Stay");
         if (confirm)
         {
-            SecureStorage.Default.Remove("auth_token");
-            SecureStorage.Default.Remove("user_id");
-            SecureStorage.Default.Remove("user_name");
+            await SessionStore.ClearAsync();
             await Shell.Current.GoToAsync("//LoginPage");
         }
     }

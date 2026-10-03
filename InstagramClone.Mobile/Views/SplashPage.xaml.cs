@@ -80,14 +80,17 @@ public partial class SplashPage : ContentPage
 
     private static async Task<string> GetDestinationAsync()
     {
+        if (!await SessionStore.HasTokenAsync())
+            return "//LoginPage";
+
         try
         {
-            var token = await SecureStorage.Default.GetAsync("auth_token");
-            return string.IsNullOrWhiteSpace(token) ? "//LoginPage" : "//MainPage";
+            await new SocialService().GetMyProfileAsync();
+            return "//MainPage";
         }
         catch
         {
-            SecureStorage.Default.Remove("auth_token");
+            await SessionStore.ClearAsync();
             return "//LoginPage";
         }
     }

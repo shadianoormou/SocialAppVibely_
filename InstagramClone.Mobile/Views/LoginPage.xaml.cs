@@ -298,9 +298,7 @@ public partial class LoginPage : ContentPage
 
     private static async Task CompleteLoginAsync(AuthResponse result)
     {
-        await SecureStorage.Default.SetAsync("auth_token", result.Token);
-        await SecureStorage.Default.SetAsync("user_id", result.UserId.ToString());
-        await SecureStorage.Default.SetAsync("user_name", result.UserName);
+        await SessionStore.SaveAsync(result.Token, result.UserId, result.UserName);
         await Shell.Current.GoToAsync("//MainPage");
     }
 
