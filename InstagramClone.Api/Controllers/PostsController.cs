@@ -43,7 +43,7 @@ public class PostsController : ControllerBase
         var post = new Post
         {
             AuthorId = userId,
-            Caption = request.Caption.Trim(),
+            Caption = request.Caption?.Trim() ?? string.Empty,
             MediaUrl = mediaUrl,
             MediaType = mediaType,
             Location = string.IsNullOrWhiteSpace(request.Location)
@@ -157,7 +157,7 @@ public class PostsController : ControllerBase
         if (post.AuthorId != userId)
             return Forbid();
 
-        post.Caption = request.Caption.Trim();
+        post.Caption = request.Caption?.Trim() ?? string.Empty;
         post.Location = string.IsNullOrWhiteSpace(request.Location) ? null : request.Location.Trim();
         await _dbContext.SaveChangesAsync();
         return Ok(await BuildResponse(id, userId));
