@@ -4,10 +4,10 @@ Vibely is a premium social media experience for sharing posts, discovering creat
 
 ## Download
 
-[![Download Vibely for Android](https://img.shields.io/badge/Download-Vibely%20Android%20APK-9B7BFF?style=for-the-badge&logo=android&logoColor=white)](https://github.com/shadianoormou/SocialAppVibely_/releases/download/v1.0.0/Vibely-1.0-android.apk)
+[![Download Vibely for Android](https://img.shields.io/badge/Download-Vibely%20Android%20APK-9B7BFF?style=for-the-badge&logo=android&logoColor=white)](https://github.com/shadianoormou/SocialAppVibely_/releases/download/v1.0.1/Vibely-1.0.1-android.apk)
 
-- [Download the latest Android APK](https://github.com/shadianoormou/SocialAppVibely_/releases/download/v1.0.0/Vibely-1.0-android.apk)
-- [Open the v1.0.0 release page](https://github.com/shadianoormou/SocialAppVibely_/releases/tag/v1.0.0)
+- [Download the latest Android APK](https://github.com/shadianoormou/SocialAppVibely_/releases/download/v1.0.1/Vibely-1.0.1-android.apk)
+- [Open the v1.0.1 release page](https://github.com/shadianoormou/SocialAppVibely_/releases/tag/v1.0.1)
 - [Launch the live web app](https://vibely-social.onrender.com/)
 
 The Android package is `com.vibely.social`, supports Android 5.0 and newer, and connects to the production Vibely backend.
@@ -32,4 +32,3 @@ The Android package is `com.vibely.social`, supports Android 5.0 and newer, and 
 2. Open the downloaded file on your Android device.
 3. If prompted, allow installation from your browser or file manager.
 4. Install and launch Vibely.
-

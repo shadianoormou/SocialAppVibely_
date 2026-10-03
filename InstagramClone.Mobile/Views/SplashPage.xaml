@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="InstagramClone.Mobile.Views.SplashPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+    BackgroundColor="#07070D"
+    Shell.NavBarIsVisible="False">
+
+    <Grid x:Name="SplashRoot" BackgroundColor="#07070D">
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Offset="0.00" Color="#07070D" />
+                    <GradientStop Offset="0.48" Color="#130D1B" />
+                    <GradientStop Offset="0.78" Color="#0D0914" />
+                    <GradientStop Offset="1.00" Color="#050508" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <shapes:Ellipse
+            x:Name="OuterHalo"
+            WidthRequest="410"
+            HeightRequest="410"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Fill="#0D9B7BFF"
+            Stroke="#259B7BFF"
+            StrokeThickness="1" />
+
+        <shapes:Ellipse
+            x:Name="InnerHalo"
+            WidthRequest="270"
+            HeightRequest="270"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Fill="#12D9B56D"
+            Stroke="#30D9B56D"
+            StrokeThickness="1" />
+
+        <VerticalStackLayout
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Spacing="24"
+            Padding="24,0">
+
+            <Image
+                x:Name="BrandArtwork"
+                Source="vibely_logo.png"
+                WidthRequest="365"
+                MaximumHeightRequest="225"
+                Aspect="AspectFit"
+                HorizontalOptions="Center"
+                SemanticProperties.Description="Vibely" />
+
+            <VerticalStackLayout Spacing="13">
+                <Label
+                    x:Name="Tagline"
+                    Text="Your visual world, beautifully connected."
+                    TextColor="#F2EAF7"
+                    FontFamily="OpenSansRegular"
+                    FontSize="16"
+                    CharacterSpacing="0.8"
+                    HorizontalTextAlignment="Center" />
+
+                <Grid
+                    x:Name="AccentLine"
+                    WidthRequest="78"
+                    HeightRequest="2"
+                    HorizontalOptions="Center">
+                    <BoxView CornerRadius="1">
+                        <BoxView.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Offset="0" Color="#009B7BFF" />
+                                <GradientStop Offset="0.48" Color="#D9B56D" />
+                                <GradientStop Offset="1" Color="#009B7BFF" />
+                            </LinearGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+                </Grid>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <Label
+            x:Name="LoadingLabel"
+            Text="VIBELY"
+            Margin="0,0,0,42"
+            VerticalOptions="End"
+            HorizontalOptions="Center"
+            FontFamily="OpenSansSemibold"
+            FontSize="10"
+            CharacterSpacing="4"
+            TextColor="#6E687D" />
+    </Grid>
+</ContentPage>

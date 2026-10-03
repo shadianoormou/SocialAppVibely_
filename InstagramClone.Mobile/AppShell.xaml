@@ -6,6 +6,7 @@
        xmlns:local="clr-namespace:InstagramClone.Mobile"
        FlyoutBehavior="Disabled"
        Shell.NavBarIsVisible="False">
+    <ShellContent Route="SplashPage" ContentTemplate="{DataTemplate views:SplashPage}" />
     <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate views:LoginPage}" />
     <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate views:RegisterPage}" />
     <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
